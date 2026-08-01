@@ -1,0 +1,28 @@
+[package]
+name = "ironjaw-integrations"
+version.workspace = true
+edition.workspace = true
+description = "External service integrations for Ironjaw (Phase 7)"
+
+[dependencies]
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+reqwest = { workspace = true }
+chrono = { workspace = true }
+sqlx = { workspace = true }
+ring = { workspace = true }
+toml = { workspace = true }
+ironjaw-security = { path = "../ironjaw-security" }
+ironjaw-tools = { path = "../ironjaw-tools" }
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true

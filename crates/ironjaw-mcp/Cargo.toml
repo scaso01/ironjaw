@@ -1,0 +1,22 @@
+[package]
+name = "ironjaw-mcp"
+version.workspace = true
+edition.workspace = true
+description = "MCP (Model Context Protocol) client for Ironjaw"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+async-trait.workspace = true
+tokio-util.workspace = true
+ironjaw-tools = { path = "../ironjaw-tools" }
+ironjaw-security = { path = "../ironjaw-security" }
+
+[lints]
+workspace = true

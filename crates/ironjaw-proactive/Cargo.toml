@@ -1,0 +1,22 @@
+[package]
+name = "ironjaw-proactive"
+version.workspace = true
+edition.workspace = true
+description = "Proactive behavior engine for Ironjaw (Phase 8)"
+
+[dependencies]
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sqlx.workspace = true
+chrono.workspace = true
+uuid.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+async-trait.workspace = true
+toml = { workspace = true }
+regex = { workspace = true }
+
+[lints]
+workspace = true

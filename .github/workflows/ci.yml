@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+
+jobs:
+  test:
+    name: build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      # The grep tool shells out to ripgrep. Without it those tests skip
+      # themselves, which would quietly shrink CI coverage rather than fail it.
+      - name: install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: formatting
+        run: cargo fmt --all -- --check
+
+      - name: clippy
+        run: cargo clippy --workspace --all-targets
+
+      - name: build
+        run: cargo build --workspace
+
+      # The 199 dashboard E2E tests are #[ignore]d: they drive a real browser
+      # against a running gateway, so they are not part of the default run.
+      - name: test
+        run: cargo test --workspace

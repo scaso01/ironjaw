@@ -1,0 +1,59 @@
+# Build artifacts
+/target
+**/target/
+
+# Runtime databases
+*.db
+*.db-wal
+*.db-shm
+/data/
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment & secrets
+.env
+*.pem
+*.key
+config/ironjaw.toml
+
+# Log files
+*.log
+
+# Test/diag harness runtime artifacts
+scripts/diag_patch_target.txt
+scripts/parity_target.txt
+scripts/parity_results.json
+scripts/smoke_results.json
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Claude Code
+.claude/worktrees/*/data/
+.claude/sessions.json
+
+# Debug artifacts
+debug/
+*.dump
+
+# rustc scratch output (default name when compiling a single .rs file without -o)
+rust_out.exe
+rust_out.pdb
+
+# Backup files
+*.bak
+*.orig
+.fastembed_cache/
+
+# Dev/eval scratch (dev gateway data, fixtures, eval results, no-op HOME)
+data-dev/
+
+# Graphify knowledge-graph output (regenerated nightly 02:00 by "Graphify Nightly Rebuild")
+graphify-out/

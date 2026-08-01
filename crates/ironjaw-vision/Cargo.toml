@@ -1,0 +1,17 @@
+[package]
+name = "ironjaw-vision"
+version.workspace = true
+edition.workspace = true
+description = "Vision/multimodal pipeline for Ironjaw (Phase 10)"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }
+
+[lints]
+workspace = true

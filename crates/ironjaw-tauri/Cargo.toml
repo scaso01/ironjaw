@@ -1,0 +1,12 @@
+[package]
+name = "ironjaw-tauri"
+version.workspace = true
+edition.workspace = true
+description = "Tauri desktop app scaffold for Ironjaw"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[lints]
+workspace = true

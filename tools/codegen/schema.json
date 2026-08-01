@@ -1,0 +1,516 @@
+{
+  "$schema": "ironjaw-rpc-schema/1.0",
+  "generated": true,
+  "methods": [
+    {
+      "method": "chat.send",
+      "category": "chat",
+      "tier": "unknown",
+      "line": 324
+    },
+    {
+      "method": "chat.history",
+      "category": "chat",
+      "tier": "unknown",
+      "line": 327
+    },
+    {
+      "method": "chat.abort",
+      "category": "chat",
+      "tier": "unknown",
+      "line": 331
+    },
+    {
+      "method": "chat.inject",
+      "category": "chat",
+      "tier": "unknown",
+      "line": 339
+    },
+    {
+      "method": "model.list",
+      "category": "model",
+      "tier": "unknown",
+      "line": 343
+    },
+    {
+      "method": "model.available",
+      "category": "model",
+      "tier": "unknown",
+      "line": 347
+    },
+    {
+      "method": "gateway.model",
+      "category": "gateway",
+      "tier": "unknown",
+      "line": 351
+    },
+    {
+      "method": "session.list",
+      "category": "session",
+      "tier": "unknown",
+      "line": 355
+    },
+    {
+      "method": "session.get",
+      "category": "session",
+      "tier": "unknown",
+      "line": 359
+    },
+    {
+      "method": "session.create",
+      "category": "session",
+      "tier": "unknown",
+      "line": 363
+    },
+    {
+      "method": "session.switch",
+      "category": "session",
+      "tier": "unknown",
+      "line": 367
+    },
+    {
+      "method": "session.delete",
+      "category": "session",
+      "tier": "unknown",
+      "line": 371
+    },
+    {
+      "method": "session.rename",
+      "category": "session",
+      "tier": "unknown",
+      "line": 375
+    },
+    {
+      "method": "tools.list",
+      "category": "tools",
+      "tier": "unknown",
+      "line": 379
+    },
+    {
+      "method": "tools.execute",
+      "category": "tools",
+      "tier": "unknown",
+      "line": 383
+    },
+    {
+      "method": "brain.remember",
+      "category": "brain",
+      "tier": "unknown",
+      "line": 386
+    },
+    {
+      "method": "brain.recall",
+      "category": "brain",
+      "tier": "unknown",
+      "line": 390
+    },
+    {
+      "method": "brain.forget",
+      "category": "brain",
+      "tier": "unknown",
+      "line": 394
+    },
+    {
+      "method": "brain.import",
+      "category": "brain",
+      "tier": "unknown",
+      "line": 398
+    },
+    {
+      "method": "brain.status",
+      "category": "brain",
+      "tier": "unknown",
+      "line": 402
+    },
+    {
+      "method": "brain.reload",
+      "category": "brain",
+      "tier": "unknown",
+      "line": 406
+    },
+    {
+      "method": "brain.memories",
+      "category": "brain",
+      "tier": "unknown",
+      "line": 410
+    },
+    {
+      "method": "brain.consolidate",
+      "category": "brain",
+      "tier": "unknown",
+      "line": 414
+    },
+    {
+      "method": "schedule.list",
+      "category": "schedule",
+      "tier": "unknown",
+      "line": 418
+    },
+    {
+      "method": "schedule.create",
+      "category": "schedule",
+      "tier": "unknown",
+      "line": 422
+    },
+    {
+      "method": "schedule.delete",
+      "category": "schedule",
+      "tier": "unknown",
+      "line": 426
+    },
+    {
+      "method": "schedule.toggle",
+      "category": "schedule",
+      "tier": "unknown",
+      "line": 430
+    },
+    {
+      "method": "workflow.create",
+      "category": "workflow",
+      "tier": "unknown",
+      "line": 434
+    },
+    {
+      "method": "workflow.status",
+      "category": "workflow",
+      "tier": "unknown",
+      "line": 438
+    },
+    {
+      "method": "workflow.cancel",
+      "category": "workflow",
+      "tier": "unknown",
+      "line": 442
+    },
+    {
+      "method": "workflow.approve",
+      "category": "workflow",
+      "tier": "unknown",
+      "line": 446
+    },
+    {
+      "method": "voice.start",
+      "category": "voice",
+      "tier": "unknown",
+      "line": 450
+    },
+    {
+      "method": "voice.stop",
+      "category": "voice",
+      "tier": "unknown",
+      "line": 454
+    },
+    {
+      "method": "voice.tts",
+      "category": "voice",
+      "tier": "unknown",
+      "line": 458
+    },
+    {
+      "method": "tts.generate",
+      "category": "tts",
+      "tier": "unknown",
+      "line": 461
+    },
+    {
+      "method": "tts.voices",
+      "category": "tts",
+      "tier": "unknown",
+      "line": 465
+    },
+    {
+      "method": "device.list",
+      "category": "device",
+      "tier": "unknown",
+      "line": 469
+    },
+    {
+      "method": "device.cmd",
+      "category": "device",
+      "tier": "unknown",
+      "line": 473
+    },
+    {
+      "method": "notify.send",
+      "category": "notify",
+      "tier": "unknown",
+      "line": 477
+    },
+    {
+      "method": "export.conversations",
+      "category": "export",
+      "tier": "unknown",
+      "line": 481
+    },
+    {
+      "method": "export.brain",
+      "category": "export",
+      "tier": "unknown",
+      "line": 485
+    },
+    {
+      "method": "infra.status",
+      "category": "infra",
+      "tier": "unknown",
+      "line": 489
+    },
+    {
+      "method": "backup.create",
+      "category": "backup",
+      "tier": "unknown",
+      "line": 493
+    },
+    {
+      "method": "ccbridge.sessions",
+      "category": "ccbridge",
+      "tier": "unknown",
+      "line": 498
+    },
+    {
+      "method": "ccbridge.sessions.rename",
+      "category": "ccbridge",
+      "tier": "unknown",
+      "line": 502
+    },
+    {
+      "method": "ccbridge.chat",
+      "category": "ccbridge",
+      "tier": "unknown",
+      "line": 506
+    },
+    {
+      "method": "cc.sessions",
+      "category": "cc",
+      "tier": "unknown",
+      "line": 511
+    },
+    {
+      "method": "cc.session.get",
+      "category": "cc",
+      "tier": "unknown",
+      "line": 515
+    },
+    {
+      "method": "cc.history",
+      "category": "cc",
+      "tier": "unknown",
+      "line": 519
+    },
+    {
+      "method": "cc.chat",
+      "category": "cc",
+      "tier": "unknown",
+      "line": 523
+    },
+    {
+      "method": "cc.chat.abort",
+      "category": "cc",
+      "tier": "unknown",
+      "line": 535
+    },
+    {
+      "method": "cc.session.create",
+      "category": "cc",
+      "tier": "unknown",
+      "line": 539
+    },
+    {
+      "method": "cc.attach",
+      "category": "cc",
+      "tier": "unknown",
+      "line": 549
+    },
+    {
+      "method": "cc.detach",
+      "category": "cc",
+      "tier": "unknown",
+      "line": 552
+    },
+    {
+      "method": "chronicle.sessions",
+      "category": "chronicle",
+      "tier": "unknown",
+      "line": 557
+    },
+    {
+      "method": "chronicle.session",
+      "category": "chronicle",
+      "tier": "unknown",
+      "line": 562
+    },
+    {
+      "method": "chronicle.search",
+      "category": "chronicle",
+      "tier": "unknown",
+      "line": 573
+    },
+    {
+      "method": "chronicle.topics",
+      "category": "chronicle",
+      "tier": "unknown",
+      "line": 577
+    },
+    {
+      "method": "chronicle.insights",
+      "category": "chronicle",
+      "tier": "unknown",
+      "line": 581
+    },
+    {
+      "method": "chronicle.stats",
+      "category": "chronicle",
+      "tier": "unknown",
+      "line": 586
+    },
+    {
+      "method": "chronicle.timeline",
+      "category": "chronicle",
+      "tier": "unknown",
+      "line": 590
+    },
+    {
+      "method": "project.status",
+      "category": "project",
+      "tier": "unknown",
+      "line": 596
+    },
+    {
+      "method": "file.get",
+      "category": "file",
+      "tier": "unknown",
+      "line": 600
+    },
+    {
+      "method": "model.llm",
+      "category": "model",
+      "tier": "unknown",
+      "line": 604
+    },
+    {
+      "method": "model.switch",
+      "category": "model",
+      "tier": "unknown",
+      "line": 608
+    },
+    {
+      "method": "role.list",
+      "category": "role",
+      "tier": "unknown",
+      "line": 612
+    },
+    {
+      "method": "role.switch",
+      "category": "role",
+      "tier": "unknown",
+      "line": 616
+    },
+    {
+      "method": "role.active",
+      "category": "role",
+      "tier": "unknown",
+      "line": 620
+    },
+    {
+      "method": "model.session",
+      "category": "model",
+      "tier": "unknown",
+      "line": 624
+    },
+    {
+      "method": "role.preset.apply",
+      "category": "role",
+      "tier": "unknown",
+      "line": 628
+    },
+    {
+      "method": "gateway.restart",
+      "category": "gateway",
+      "tier": "unknown",
+      "line": 632
+    },
+    {
+      "method": "chronicle.enrich",
+      "category": "chronicle",
+      "tier": "unknown",
+      "line": 636
+    },
+    {
+      "method": "sessions.patch",
+      "category": "sessions",
+      "tier": "unknown",
+      "line": 641
+    },
+    {
+      "method": "sessions.delete",
+      "category": "sessions",
+      "tier": "unknown",
+      "line": 645
+    },
+    {
+      "method": "sessions.preview",
+      "category": "sessions",
+      "tier": "unknown",
+      "line": 649
+    },
+    {
+      "method": "command.sessions",
+      "category": "command",
+      "tier": "unknown",
+      "line": 654
+    },
+    {
+      "method": "command.session.get",
+      "category": "command",
+      "tier": "unknown",
+      "line": 658
+    },
+    {
+      "method": "command.session.action",
+      "category": "command",
+      "tier": "unknown",
+      "line": 662
+    },
+    {
+      "method": "command.usage.summary",
+      "category": "command",
+      "tier": "unknown",
+      "line": 666
+    },
+    {
+      "method": "command.usage.by_role",
+      "category": "command",
+      "tier": "unknown",
+      "line": 677
+    },
+    {
+      "method": "system.resources",
+      "category": "system",
+      "tier": "unknown",
+      "line": 682
+    },
+    {
+      "method": "device.pair.request",
+      "category": "device",
+      "tier": "unknown",
+      "line": 688
+    },
+    {
+      "method": "device.pair.confirm",
+      "category": "device",
+      "tier": "unknown",
+      "line": 692
+    },
+    {
+      "method": "device.pair.revoke",
+      "category": "device",
+      "tier": "unknown",
+      "line": 696
+    },
+    {
+      "method": "model.perf",
+      "category": "model",
+      "tier": "unknown",
+      "line": 701
+    }
+  ]
+}

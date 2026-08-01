@@ -1,0 +1,23 @@
+[package]
+name = "ironjaw-claude"
+version.workspace = true
+edition.workspace = true
+description = "WebSocket bridge client to cc-bridge for Claude Code session management"
+
+[dependencies]
+tokio = { workspace = true, features = ["sync", "time", "macros", "process", "io-util"] }
+tokio-tungstenite = { version = "0.26", features = ["native-tls"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+futures-util = { workspace = true, features = ["sink"] }
+
+[dev-dependencies]
+toml = "0.8"
+
+[lints]
+workspace = true

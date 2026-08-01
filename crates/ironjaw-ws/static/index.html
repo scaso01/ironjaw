@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ironjaw Command Center</title>
+    <link rel="stylesheet" href="/dashboard/css/dashboard.css">
+</head>
+<body>
+    <div id="app">
+        <nav id="sidebar">
+            <div class="logo">
+                <h2>Ironjaw</h2>
+                <span class="version" id="version-label">v0.1.0</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#/" class="nav-link active" data-page="overview">Overview</a></li>
+                <li><a href="#/chat" class="nav-link" data-page="chat">Chat</a></li>
+                <li><a href="#/cc_sessions" class="nav-link" data-page="cc_sessions">CC Sessions</a></li>
+                <li><a href="#/chronicle" class="nav-link" data-page="chronicle">Chronicle</a></li>
+                <li class="nav-divider"></li>
+                <li class="nav-section">Monitor</li>
+                <li><a href="#/health" class="nav-link" data-page="health">Health</a></li>
+                <li><a href="#/metrics" class="nav-link" data-page="metrics">Metrics</a></li>
+                <li><a href="#/infrastructure" class="nav-link" data-page="infrastructure">Infrastructure</a></li>
+                <li><a href="#/devices" class="nav-link" data-page="devices">Devices</a></li>
+                <li><a href="#/brain" class="nav-link" data-page="brain">Brain</a></li>
+                <li><a href="#/schedules" class="nav-link" data-page="schedules">Schedules</a></li>
+                <li class="nav-divider"></li>
+                <li class="nav-section">System</li>
+                <li><a href="#/models" class="nav-link" data-page="models">Models</a></li>
+                <li><a href="#/security" class="nav-link" data-page="security">Security</a></li>
+                <li><a href="#/tools" class="nav-link" data-page="tools">Tools</a></li>
+                <li><a href="#/plugins" class="nav-link" data-page="plugins">Plugins</a></li>
+                <li><a href="#/vault" class="nav-link" data-page="vault">Secrets Vault</a></li>
+                <li><a href="#/browser" class="nav-link" data-page="browser">Browser</a></li>
+                <li><a href="#/sessions" class="nav-link" data-page="sessions">Sessions</a></li>
+                <li><a href="#/settings" class="nav-link" data-page="settings">Settings</a></li>
+            </ul>
+            <div class="connection-status" id="ws-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Disconnected</span>
+            </div>
+        </nav>
+        <main id="content">
+            <!-- Pages render here -->
+        </main>
+    </div>
+
+    <!-- Core modules (order matters) -->
+    <script src="/dashboard/js/gateway.js"></script>
+    <script src="/dashboard/js/utils.js"></script>
+    <script src="/dashboard/js/api.js"></script>
+
+    <!-- Page modules -->
+    <script src="/dashboard/js/pages/overview.js"></script>
+    <script src="/dashboard/js/pages/sessions_page.js"></script>
+    <script src="/dashboard/js/pages/tools_page.js"></script>
+    <script src="/dashboard/js/pages/health_page.js"></script>
+    <script src="/dashboard/js/pages/chat.js"></script>
+    <script src="/dashboard/js/pages/login.js"></script>
+    <script src="/dashboard/js/pages/models.js"></script>
+    <script src="/dashboard/js/pages/cc_sessions.js"></script>
+    <script src="/dashboard/js/pages/brain.js"></script>
+    <script src="/dashboard/js/pages/chronicle.js"></script>
+    <script src="/dashboard/js/pages/settings.js"></script>
+    <script src="/dashboard/js/pages/schedules.js"></script>
+    <script src="/dashboard/js/pages/metrics.js"></script>
+    <script src="/dashboard/js/pages/devices.js"></script>
+    <script src="/dashboard/js/pages/infrastructure.js"></script>
+    <!-- New pages (other agents will create these files) -->
+    <script src="/dashboard/js/pages/graph.js"></script>
+    <script src="/dashboard/js/pages/vault.js"></script>
+    <script src="/dashboard/js/pages/plugins.js"></script>
+    <script src="/dashboard/js/pages/browser_page.js"></script>
+    <script src="/dashboard/js/pages/security_page.js"></script>
+
+    <!-- App router (must be last) -->
+    <script src="/dashboard/js/app.js"></script>
+
+    <!-- Init -->
+    <script>document.addEventListener('DOMContentLoaded', () => App.init());</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+[package]
+name = "ironjaw-tools"
+version.workspace = true
+edition.workspace = true
+description = "Tool execution engine for Ironjaw (Phase 5)"
+
+[dependencies]
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+futures-util = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+ironjaw-security = { path = "../ironjaw-security" }
+ironjaw-llm = { path = "../ironjaw-llm" }
+ironjaw-brain = { path = "../ironjaw-brain" }
+reqwest = { workspace = true }
+rust-embed = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { workspace = true }
+
+[lints]
+workspace = true

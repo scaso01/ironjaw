@@ -1,0 +1,31 @@
+# gitleaks configuration for Ironjaw.
+#
+# The default ruleset is kept in full; this file only adds one narrow exemption.
+#
+# crates/ironjaw-security/src/leak_detector.rs IS the secret-scanning module. It
+# contains the regexes it matches against, and its unit tests feed it deliberately
+# fake credentials so the detector can be shown to fire. gitleaks flags those
+# fixtures, which is the correct behaviour for a scanner and the wrong result for
+# this repository: eight findings that are all the test suite doing its job.
+#
+# The exemption is scoped to that single path, so a real credential committed
+# anywhere else in the tree is still caught.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "leak-detector-fixtures"
+description = "Placeholder, matches nothing; present so the allowlist below has a home."
+regex = '''\$^'''
+
+[allowlist]
+description = "Fixtures belonging to the leak detector's own test suite"
+paths = [
+  '''crates/ironjaw-security/src/leak_detector\.rs''',
+]
+# The dashboard E2E suite asks the gateway for a key that is meant not to exist,
+# to prove the miss path returns cleanly. The literal name trips generic-api-key.
+regexes = [
+  '''nonexistent_key_12345''',
+]

@@ -1,0 +1,5 @@
+# B2 sample subprocess hook manifest — pairs with block-prompt.cmd.
+# Returns HookAction::Block on every UserPromptSubmit fire.
+event = "UserPromptSubmit"
+priority = 0
+timeout_secs = 3

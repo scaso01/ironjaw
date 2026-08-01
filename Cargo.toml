@@ -1,0 +1,113 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/ironjaw-core",
+    "crates/ironjaw-ws",
+    "crates/ironjaw-security",
+    "crates/ironjaw-audit",
+    # Stub crates (phases 2-9)
+    "crates/ironjaw-llm",
+    "crates/ironjaw-session",
+    "crates/ironjaw-tools",
+    "crates/ironjaw-brain",
+    "crates/ironjaw-integrations",
+    "crates/ironjaw-proactive",
+    "crates/ironjaw-voice",
+    "crates/ironjaw-vision",
+    "crates/ironjaw-mcp",
+    # Stream 11: CLI & TUI clients
+    "crates/ironjaw-cli",
+    # Desktop app scaffold
+    "crates/ironjaw-tauri",
+    # Claude Code session bridge
+    "crates/ironjaw-claude",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Sean Caso"]
+license = "AGPL-3.0-or-later"
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Web framework
+axum = { version = "0.8", features = ["ws"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "migrate", "chrono"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Utilities
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "2"
+anyhow = "1"
+futures-util = "0.3"
+futures-core = "0.3"
+tokio-stream = "0.1"
+
+# Security
+regex = "1"
+jsonschema = "0.28"
+
+# Crypto
+ring = "0.17"
+sha2 = "0.10"
+
+# Tokenizer (token counting for static-layer caps)
+tiktoken-rs = "0.11"
+
+# Cancellation tokens (CancellationToken lives in tokio_util::sync module,
+# which is gated by the `rt` feature in tokio-util 0.7 — `sync` is NOT a
+# valid feature name on this version).
+tokio-util = { version = "0.7", features = ["rt"] }
+
+# Async traits
+async-trait = "0.1"
+
+# Static file embedding
+rust-embed = "8"
+mime_guess = "2"
+
+# mDNS service discovery
+mdns-sd = "0.11"
+hostname = "0.4"
+
+# Testing
+tokio-tungstenite = "0.26"
+reqwest = { version = "0.12", features = ["json", "stream", "multipart"] }
+
+# Concurrent collections
+dashmap = "2"
+
+# Random
+rand = "0.8"
+
+# Platform-specific
+windows-sys = { version = "0.59", features = ["Win32_System_JobObjects", "Win32_System_Threading", "Win32_Foundation", "Win32_Security"] }
+
+[workspace.lints.clippy]
+all = "warn"
+correctness = { level = "deny", priority = -1 }
+dbg_macro = "warn"
+todo = "warn"
+unimplemented = "warn"
+uninlined_format_args = "warn"
+redundant_clone = "warn"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

@@ -1,0 +1,54 @@
+[package]
+name = "ironjaw-ws"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+ironjaw-security = { path = "../ironjaw-security" }
+ironjaw-audit = { path = "../ironjaw-audit" }
+ironjaw-llm = { path = "../ironjaw-llm" }
+ironjaw-session = { path = "../ironjaw-session" }
+ironjaw-tools = { path = "../ironjaw-tools" }
+ironjaw-brain = { path = "../ironjaw-brain" }
+ironjaw-proactive = { path = "../ironjaw-proactive" }
+ironjaw-voice = { path = "../ironjaw-voice" }
+ironjaw-vision = { path = "../ironjaw-vision" }
+ironjaw-claude = { path = "../ironjaw-claude" }
+ironjaw-mcp = { path = "../ironjaw-mcp" }
+
+axum.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+toml.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+futures-util.workspace = true
+tokio-stream.workspace = true
+tokio-util = { workspace = true }
+reqwest.workspace = true
+base64 = "0.22"
+sqlx.workspace = true
+rand.workspace = true
+dashmap.workspace = true
+regex.workspace = true
+sysinfo = "0.34"
+async-trait.workspace = true
+wasmi = { version = "2.0.0-beta.2", default-features = true }
+tokio-tungstenite.workspace = true
+rust-embed.workspace = true
+mime_guess.workspace = true
+socket2 = "0.6.3"
+sha2 = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util"] }
+tower = { version = "0.5", features = ["util"] }
+headless_chrome = "1.0"
+tempfile = "3"
+
+[lints]
+workspace = true

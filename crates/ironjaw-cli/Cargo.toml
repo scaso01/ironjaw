@@ -1,0 +1,17 @@
+[package]
+name = "ironjaw-cli"
+version.workspace = true
+edition.workspace = true
+description = "CLI client for Ironjaw gateway"
+
+[dependencies]
+clap = { version = "4", features = ["derive", "env"] }
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
+chrono.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

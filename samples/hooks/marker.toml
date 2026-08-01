@@ -1,0 +1,12 @@
+# B2 sample subprocess hook manifest — pairs with marker.cmd.
+#
+# Required: `event` — must match a HookEventKind (parsed via FromStr).
+#   Valid values: PreChat, PostChat, PreToolExec, PostToolExec,
+#                 SessionStart, SessionEnd, MemoryStore, MemoryRecall,
+#                 PreCompact, UserPromptSubmit, SkillActivated,
+#                 SkillDeactivated.
+# Optional: `priority` (i32, lower runs first; default 0)
+# Optional: `timeout_secs` (subprocess only; clamped to [hooks.subprocess].timeout_ceiling_secs)
+event = "SessionStart"
+priority = 0
+timeout_secs = 5

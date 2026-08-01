@@ -1,0 +1,197 @@
+[server]
+host = "127.0.0.1"
+port = 18794
+# Enable OpenAI-compatible REST API endpoints (/v1/*)
+openai_compat = true
+
+[auth]
+# Set via IRONJAW_AUTH_TOKEN environment variable.
+# config.rs must be updated to resolve ${IRONJAW_AUTH_TOKEN} from env.
+token = "${IRONJAW_AUTH_TOKEN}"
+
+[audit]
+database_path = "data/ironjaw.db"
+
+[logging]
+level = "info"
+format = "pretty"
+
+[session]
+database_path = "data/sessions.db"
+context_token_limit = 32768
+
+[security]
+hitl_timeout_secs = 30
+rate_limit_enabled = true
+sanitize_enabled = true
+
+[tools]
+working_dir = "C:\\Users\\deploy\\Projects"
+shell_timeout_secs = 30
+
+[brain]
+enabled = true
+database_path = "data/brain.db"
+embedding_backend = "fastembed"
+embedding_url = "http://localhost:8080"
+embedding_model = "nomic-embed-text"
+auto_recall_top_k = 3
+max_memories = 10000
+brain_files_dir = "config/brain"
+layer1_budget_tokens = 600
+memory_relevance_threshold = 0.3
+auto_learn = true
+learn_dedup_threshold = 0.85
+learn_after_turns = 3
+learn_use_llm = true
+learn_novelty_threshold = 0.15
+consolidation_interval_hours = 6
+
+# Salience decay configuration
+# salience_hot_days = 7
+# salience_warm_days = 30
+# salience_boost_per_access = 0.02
+
+# Session summary auto-generation
+# session_summary_enabled = true
+# session_summary_on_compact = true
+# session_summary_on_switch = true
+
+# Context variables
+# context_var_max_tokens = 4000
+
+# Auto entity extraction
+# auto_entity_extraction = true
+
+# Auto-inject brain memories before LLM routing
+[brain.auto_inject]
+enabled = true
+max_memories = 5
+min_score = 0.3
+max_context_budget = 2000
+# exclude_voice = true
+
+[brain.indexers.chronicle]
+enabled = true
+db_path = "C:/Users/deploy/Projects/cc-chronicle/data/chronicle.db"
+poll_interval_secs = 60
+
+[brain.indexers.markdown]
+enabled = true
+watch_dirs = ["C:/Users/deploy/.claude/projects/C--Users-deploy/memory"]
+debounce_secs = 5
+
+[integrations]
+enabled = false
+searxng_url = "http://192.0.2.20:8080"
+perplexica_url = "http://192.0.2.20:3001"
+cc_bridge_url = "http://127.0.0.1:18790"
+cc_chronicle_url = "http://127.0.0.1:18793"
+remote_host = "192.0.2.20"
+remote_user = "deploy"
+secrets_database_path = "data/secrets.db"
+# ha_url = "http://homeassistant.local:8123"
+# ha_token = "your-long-lived-access-token"
+
+[proactive]
+enabled = true
+database_path = "data/proactive.db"
+check_interval_secs = 60
+max_concurrent_workflows = 3
+
+[voice]
+enabled = true
+stt_url = "http://localhost:8080"
+stt_model = "whisper-large-v3-turbo"
+tts_url = "http://localhost:8090"
+tts_model = "chatterbox"
+tts_voice = "kitt"
+sample_rate = 16000
+max_audio_buffer_bytes = 16777216
+inactivity_timeout_secs = 30
+
+[vision]
+enabled = true
+max_image_size_bytes = 10485760
+
+[llm]
+default_model = "qwen3.5:35b-a3b-abliterated"
+
+[llm.aliases]
+coder = "llama-server/qwen3-coder-next-abliterated"
+brain = "llama-server/qwen3.5:35b-a3b-abliterated"
+fast = "llama-server/qwen3.5:9b-abliterated"
+vision = "llama-server/qwen3.5:35b-a3b-abliterated"
+cloud = "anthropic/claude-sonnet-4-6"
+opus = "anthropic/claude-opus-4-6"
+gemini = "gemini/gemini-3-flash"
+
+[[llm.providers]]
+name = "llama-server"
+type = "llama-server"
+base_url = "http://localhost:8080"
+
+# Anthropic (native provider with SSE streaming)
+# OAuth token auto-read from ~/.claude/.credentials.json (Claude Max).
+[[llm.providers]]
+name = "anthropic"
+type = "anthropic"
+base_url = "https://api.anthropic.com"
+timeout_secs = 120
+
+# Gemini (uses OpenAI-compatible API)
+# [[llm.providers]]
+# name = "gemini"
+# type = "openai"
+# base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
+# api_key_env = "GEMINI_API_KEY"
+# timeout_secs = 120
+
+# Cloud model catalogs — shown in Android dropdown even when providers are commented out
+[[llm.cloud_models]]
+provider = "anthropic"
+models = [
+    { id = "claude-sonnet-4-6", description = "Claude Sonnet 4.6 (fast, balanced)" },
+    { id = "claude-opus-4-6", description = "Claude Opus 4.6 (most capable)" },
+    { id = "claude-haiku-4-5", description = "Claude Haiku 4.5 (fastest, cheapest)" },
+]
+
+# Skills (roles) — define model + tool bundles
+[[skills]]
+name = "brain"
+description = "Chat router — receives messages and delegates to specialists"
+tools = ["read_file", "list_files", "searxng", "web_search"]
+model = "brain"
+fallback_chain = ["fast"]
+cloud_models = ["cloud"]
+temperature = 0.7
+enabled = true
+
+[[skills]]
+name = "coder"
+description = "Coding assistant with full tool access"
+tools = ["read_file", "write_file", "shell", "list_files", "patch", "process", "git_status", "git_log"]
+model = "coder"
+fallback_chain = ["fast"]
+cloud_models = ["opus"]
+temperature = 0.3
+enabled = false
+
+[[skills]]
+name = "vision"
+description = "Image analysis and vision tasks"
+tools = []
+model = "vision"
+fallback_chain = ["brain"]
+cloud_models = ["cloud"]
+temperature = 0.7
+enabled = false
+
+[claude]
+enabled = true
+claude_cmd = "C:\\Users\\deploy\\AppData\\Roaming\\npm\\claude.cmd"
+default_cwd = "C:\\Users\\deploy\\Projects"
+sessions_dir = "C:\\Users\\deploy\\.claude\\projects"
+timeout_ms = 120000
+idle_timeout_ms = 120000
+max_concurrent = 3
