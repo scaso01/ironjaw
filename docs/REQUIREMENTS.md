@@ -1794,7 +1794,7 @@ The user selected "automated test + build + deploy — push to workstation/docke
 Ironjaw must expose a Prometheus-compatible metrics endpoint, and a Grafana dashboard must be provisioned on docker-host to visualize Ironjaw's operational metrics.
 
 **Rationale:**
-docker-host already runs Grafana + Prometheus for isp-monitor. The user requested "Grafana dashboard for Ironjaw metrics (expose Prometheus-compatible endpoint)" as a confirmed gap in Section 5.6.
+docker-host already runs Grafana + Prometheus for link-monitor. The user requested "Grafana dashboard for Ironjaw metrics (expose Prometheus-compatible endpoint)" as a confirmed gap in Section 5.6.
 
 **Acceptance Criteria:**
 - [ ] `GET /metrics` returns Prometheus text format exposition with all metrics tracked by `infra.metrics`

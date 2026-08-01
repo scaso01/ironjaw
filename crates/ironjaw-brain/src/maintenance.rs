@@ -835,7 +835,7 @@ impl MemoryMaintenance {
                  - GOOD: \"llama-server is reconfigured approximately weekly — parallel count, \
                  model, and cache settings change most often\"\n\
                  - BAD: \"User manages multiple projects\"\n\
-                 - GOOD: \"Ironjaw and JobHunter are the most actively developed projects, \
+                 - GOOD: \"Ironjaw and ExamplePipeline are the most actively developed projects, \
                  with 3-4 sessions per week each\"\n\n\
                  Respond with ONLY the insight, no preamble:\n\n{facts}"
             );
@@ -1105,7 +1105,7 @@ impl MemoryMaintenance {
              standard defaults after each upgrade\"\n\
              - BAD: \"Testing is a common activity\"\n\
              - GOOD: \"Test suite runs average 3x per session across Ironjaw (cargo test) \
-             and JobHunter (pytest), usually before commits\"\n\
+             and ExamplePipeline (pytest), usually before commits\"\n\
              - Look for: repeated config changes, recurring error patterns, workflow habits, \
              tool usage sequences, time-of-day patterns.\n\n\
              List 1-3 patterns, one per line. Respond with ONLY the patterns, no preamble:\n\n{text}"

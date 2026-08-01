@@ -337,10 +337,10 @@ async def p7_brain_writeback(ws):
     sid = await session_create(ws, "p7_brain_writeback")
     await session_switch(ws, sid)
     # Trigger a tool call
-    r = await chat_run(ws, "List the files in the JobHunter folder.", timeout=180)
+    r = await chat_run(ws, "List the files in the ExamplePipeline folder.", timeout=180)
     # Query brain.recall to find any ToolVerified memories from this session
     await asyncio.sleep(2)  # let writeback land
-    rid = await send_req(ws, "brain.recall", {"query": "JobHunter folder list_files", "limit": 10, "explain": True})
+    rid = await send_req(ws, "brain.recall", {"query": "ExamplePipeline folder list_files", "limit": 10, "explain": True})
     res = await wait_for_res(ws, rid, timeout=15)
     payload = res.get("payload") or {}
     memories = payload.get("memories") or payload.get("results") or []

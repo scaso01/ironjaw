@@ -1,113 +1,135 @@
 # Ironjaw
 
-Ironjaw -- Rust WebSocket gateway for the Dr. CLAW AI assistant platform. Replaces OpenClaw Gateway, CC Bridge, CC Chronicle, and all other Node.js services with a single binary.
+[![CI](https://github.com/scaso01/ironjaw/actions/workflows/ci.yml/badge.svg)](https://github.com/scaso01/ironjaw/actions/workflows/ci.yml)
+[![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](LICENSE)
+[![Rust](https://img.shields.io/badge/rust-1.93%2B-orange.svg)](https://www.rust-lang.org)
 
-- **Language:** Rust 1.93.1 (MSVC toolchain)
-- **Framework:** axum 0.8 + tokio
-- **Tests:** unit and integration suites across all 16 crates, plus dashboard E2E via headless Chrome
-- **Protocol:** v4 with 8 frame types and ~166 WebSocket methods
-- **License:** AGPL-3.0-or-later
+A single-binary WebSocket gateway for building a personal AI assistant. It sits
+between your clients and your models, and it owns the parts that are tedious to
+get right: streaming, sessions that survive a reconnect, a permission model with
+a human in the loop, long-term memory, and tool execution.
+
+It talks to a local `llama-server` or any OpenAI-compatible endpoint, so the
+whole thing can run on hardware you own with no per-token bill.
+
+<p align="center">
+  <img src="docs/images/dashboard.png" alt="Ironjaw dashboard showing live sessions and gateway metrics" width="900">
+</p>
+
+## Why it exists
+
+Most assistant stacks end up as a pile of Node services that each solve one
+piece and none of which agree on state. Ironjaw replaces that with one Rust
+binary and one SQLite file per concern. Sixteen crates, one process, one config
+file.
+
+The design goal throughout is that a dropped connection should not lose work.
+Sessions persist, streams resume mid-token with a `catchup` frame, and a tool
+call that was mid-flight when the socket died is still there when the client
+comes back.
 
 ## Features
 
-- **Protocol v4 WebSocket** -- 8 frame types (req, res, stream, event, cmd, cmd.res, ui, ui.res) with ~166 methods
-- **LLM router** -- Streaming via llama-server + OpenAI providers, complexity-based routing, retry/failover/cache decorators, per-model token accounting
-- **Persistent sessions** -- SQLite WAL, CRUD, cursor-based pagination, context compaction, session repair
-- **4-tier permission system** -- Auto/Notify/Confirm/MultiConfirm with HITL gates
-- **Tool engine** -- 10 built-in tools + 15 integration tools, parallel fan-out execution
-- **RAG memory (Brain v2)** -- 3-layer context (identity, working, long-term), hybrid search (vector + FTS5 + RRF fusion), knowledge graph, temporal facts, salience decay, sleep-time maintenance agents
-- **Proactive engine** -- Cron scheduler + workflow DAG executor
-- **Voice pipeline** -- STT via Whisper, TTS via Orpheus (llama-server)
-- **Vision/multimodal** -- Image analysis via multimodal LLM, OCR tool
-- **Multi-device** -- Device registry, offline message queue, push notifications
-- **Claude Code integration** -- CC subprocess management, bidirectional session sync, JSONL history parsing
-- **MCP client + server** -- Expose 17 brain tools over MCP, via stdio or a native Streamable HTTP endpoint on the gateway; consume external MCP servers
-- **OpenAI-compatible API** -- Drop-in `/v1/chat/completions`, `/v1/models`, `/v1/embeddings` endpoints
-- **A2A protocol** -- Agent-to-Agent communication following the Google A2A specification
-- **Skills, hooks, plugins** -- Dynamic skill loading, lifecycle hooks, runtime plugin system
-- **Agentic tool execution (Phase 18)** -- Iterative tool-call loop for `chat.send`: executes LLM tool calls, feeds results back, re-prompts until a text-only turn; HITL session-cache, `ToolVerified` Brain writeback, `tool.start`/`tool.result` events, mid-stream reconnect `catchup`
-- **Agent infrastructure** -- Sub-agent delegation, conversation forking, inter-agent routing graph
-- **Dashboard + mobile API** -- REST API for web dashboard and Dr. CLAW Android app
-- **Circuit breakers and metrics** -- Per-service circuit breakers, internal counters
-- **Append-only audit trail** -- SQLite audit log for every method call
+- **Protocol v4 over WebSocket**, 8 frame types (`req`, `res`, `stream`,
+  `event`, `cmd`, `cmd.res`, `ui`, `ui.res`) and roughly 166 methods.
+- **LLM router** with streaming, complexity-based model selection, and
+  retry, failover and cache decorators stacked over any provider.
+- **Persistent sessions** on SQLite WAL, with cursor pagination, automatic
+  context compaction, and repair for sessions that were interrupted mid-write.
+- **Four-tier permissions**, Auto, Notify, Confirm and MultiConfirm, with
+  human-in-the-loop gates that fail closed on timeout.
+- **Agentic tool loop**, executes model tool calls, feeds results back, and
+  re-prompts until the model returns text. Emits `tool.start` and `tool.result`
+  so a client can render progress.
+- **RAG memory**, three context layers, hybrid retrieval over vectors and FTS5
+  fused with RRF, a knowledge graph, temporal facts, salience decay, and
+  maintenance agents that run while the system is idle.
+- **MCP client and server**, expose the memory tools over stdio or a native
+  Streamable HTTP endpoint, and consume external MCP servers.
+- **OpenAI-compatible API**, drop-in `/v1/chat/completions`, `/v1/models` and
+  `/v1/embeddings`.
+- **Voice and vision**, STT via Whisper, TTS via Orpheus, image analysis and OCR.
+- **Proactive engine**, a cron scheduler plus a workflow DAG executor.
+- **Security layer**, SSRF protection, taint tracking, output scrubbing, secret
+  leak detection, rate limiting and a loop guard.
+- **Append-only audit trail**, every method call recorded in SQLite.
 
-## Quick Start
+## Quick start
 
-Prerequisites: Rust 1.93.1+ (MSVC toolchain), llama-server (optional)
+You need Rust 1.93 or newer. A local `llama-server` is optional; without one,
+point the config at any OpenAI-compatible endpoint.
 
 ```bash
-cargo build
-cargo run -- config/ironjaw.toml     # WebSocket gateway on :18794
-cargo run -- --mcp-server config/ironjaw.toml  # MCP server mode (stdio)
-cargo test                            # lib tests across all 16 crates
+git clone https://github.com/scaso01/ironjaw.git
+cd ironjaw
+cp config/ironjaw.toml.example config/ironjaw.toml
 ```
+
+Set an auth token. The config reads `${ENV_VAR}` placeholders, so keep the
+secret out of the file:
+
+```bash
+export IRONJAW_AUTH_TOKEN="$(openssl rand -hex 18)"
+cargo run -- config/ironjaw.toml
+```
+
+The gateway comes up on `:18794`. Check it:
+
+```bash
+curl -s localhost:18794/health
+```
+
+Other entry points:
+
+```bash
+cargo run -- --mcp-server config/ironjaw.toml   # MCP over stdio
+cargo test --workspace                          # the test suite
+```
+
+<p align="center">
+  <img src="docs/images/cli-status.png" alt="ironjaw status output showing gateway health and connected services" width="760">
+</p>
 
 ## Architecture
 
 | Crate | Purpose |
 |---|---|
-| `ironjaw-core` | Binary entry point, TOML config (13 sections), hot-reload watcher |
-| `ironjaw-ws` | axum WebSocket server, Protocol v4, ~166 method handlers, dashboard, mobile API, ops, plugins, skills, hooks, agent graph, A2A, OpenAI-compat |
-| `ironjaw-security` | 4-tier permissions, HITL gates, rate limiting, input sanitization, output scrubbing, SSRF protection, taint tracking, loop guard, leak detection, chain alerting |
+| `ironjaw-core` | Binary entry point, TOML config, hot-reload watcher |
+| `ironjaw-ws` | axum WebSocket server, Protocol v4 handlers, dashboard, mobile API, plugins, skills, hooks, agent graph, A2A, OpenAI compatibility |
+| `ironjaw-security` | Permission tiers, HITL gates, rate limiting, sanitization, SSRF protection, taint tracking, leak detection |
 | `ironjaw-audit` | Append-only SQLite audit trail |
-| `ironjaw-llm` | LLM provider abstraction (llama-server, OpenAI, Mock), complexity routing, retry/failover/cache decorators, token accounting, JSON repair |
-| `ironjaw-session` | Persistent session + message storage (SQLite WAL), context compaction, session repair |
-| `ironjaw-tools` | Tool execution engine with trait-based registry, 10 built-in tools, parallel executor |
-| `ironjaw-brain` | RAG memory v2 with hybrid search (vector + FTS5 + RRF), knowledge graph, temporal facts, salience decay, sleep-time maintenance agents |
-| `ironjaw-integrations` | 15 integration tools (search, CC, infra, Docker, ADB, git, HA, secrets) |
-| `ironjaw-proactive` | Cron scheduler + workflow DAG engine |
-| `ironjaw-voice` | Voice pipeline (STT/TTS via llama-server) |
-| `ironjaw-vision` | Image processing, OCR tool, multimodal LLM analysis |
-| `ironjaw-mcp` | MCP client + server (expose brain tools, consume external MCP servers) |
-| `ironjaw-cli` | CLI client (interactive REPL, session/tool/brain/status commands) |
-| `ironjaw-claude` | CC subprocess management, JSONL history parsing, bidirectional session sync |
+| `ironjaw-llm` | Provider abstraction, complexity routing, retry and failover decorators, token accounting, JSON repair |
+| `ironjaw-session` | Session and message storage, context compaction, session repair |
+| `ironjaw-tools` | Trait-based tool registry, built-in tools, parallel executor |
+| `ironjaw-brain` | RAG memory, hybrid search, knowledge graph, temporal facts, salience decay |
+| `ironjaw-integrations` | Integration tools for search, infrastructure, Docker, ADB, git, Home Assistant and secrets |
+| `ironjaw-proactive` | Cron scheduler and workflow DAG engine |
+| `ironjaw-voice` | STT and TTS pipeline |
+| `ironjaw-vision` | Image processing, OCR, multimodal analysis |
+| `ironjaw-mcp` | MCP client and server |
+| `ironjaw-cli` | Interactive REPL and status commands |
+| `ironjaw-claude` | Coding-agent subprocess management and session sync |
+| `ironjaw-tauri` | Desktop shell scaffolding |
 
-## Protocol v4
+## Endpoints
 
-### Frame Types
-
-| Frame | Direction | Description |
+| Endpoint | Method | Description |
 |---|---|---|
-| `req` | Client -> Server | Client method request |
-| `res` | Server -> Client | Method response |
-| `stream` | Server -> Client | Streaming token output |
-| `event` | Server -> Client | Server-pushed event (permission.notify, permission.request, tool.start, tool.result) |
-| `cmd` | Bidirectional | Device command |
-| `cmd.res` | Bidirectional | Command response / HITL approval or denial |
-| `ui` | Bidirectional | UI state update |
-| `ui.res` | Bidirectional | UI response |
-
-### Methods (~166 total)
-
-| Namespace | Methods | Examples |
-|---|---|---|
-| `auth.*` | 1 | `auth.connect` -- authenticate + resume/create session |
-| `ping` | 1 | Liveness check with uptime |
-| `chat.*` | 4 | `send`, `history`, `abort`, `search`, `inject` |
-| `session.*` | 8 | `list`, `get`, `create`, `switch`, `delete`, `rename`, `pin`, `archive`, `fork`, `resolved` |
-| `model.*` | 6 | `list`, `status`, `available`, `llm`, `perf`, `session`, `switch` |
-| `tools.*` | 2 | `list`, `execute` |
-| `brain.*` | 12 | `remember`, `recall`, `forget`, `import`, `timeline`, `summaries`, `context.*` (set/load/list/delete/peek), `consolidate`, `memories`, `reload`, `status` |
-| `schedule.*` | 3 | `list`, `create`, `delete`, `toggle` |
-| `workflow.*` | 3 | `status`, `create`, `cancel`, `approve` |
-| `voice.*` / `tts.*` | 5 | `start`, `stop`, `tts`, `voices`, `generate`/`convert` |
-| `device.*` | 5 | `list`, `cmd`, `pair.request`, `pair.confirm`, `pair.revoke` |
-| `notify.*` | 1 | `send` -- push notification to device |
-| `infra.*` | 2 | `status`, `metrics` |
-| `export.*` / `backup.*` | 3 | `conversations`, `brain`, `backup.create` |
-| `cc.*` | 10 | `sessions`, `session.get`, `history`, `chat`, `chat.abort`, `session.create`, `attach`, `detach`, `history.since`, `complete` |
-| `ccbridge.*` | 3 | `sessions`, `chat`, `sessions.rename` |
-| `chronicle.*` | 7 | `enrich`, `insights`, `search`, `session`, `sessions`, `stats`, `timeline`, `topics` |
-| `command.*` | 4 | `sessions`, `session.get`, `session.action`, `usage.*` |
-| `plugins.*` | 2 | `list`, `toggle` |
-| `role.*` | 4 | `list`, `switch`, `active`, `preset.apply` |
-| Other | 5 | `file.get`, `gateway.restart`, `system.resources`, `project.status`, `image.received` |
-
-See [CLAUDE.md](CLAUDE.md) for the complete method reference with tier assignments and descriptions.
+| `/ws` | WebSocket | Protocol v4, the primary interface |
+| `/health` | GET | Health check with uptime |
+| `/v1/chat/completions` | POST | OpenAI-compatible completion, streaming and not |
+| `/v1/models` | GET | Model list in OpenAI format |
+| `/v1/embeddings` | POST | Embeddings, proxied to the configured backend |
+| `/api/dashboard/*` | GET/POST | Dashboard REST API |
+| `/api/brain/*` | GET/POST | Memory browse, and an approval queue for pending memories |
+| `/api/mobile/*` | GET/POST | Endpoints shaped for the Android client |
+| `/mcp` | POST | Native MCP Streamable HTTP. Bearer token required except from loopback, and unregistered entirely when no token is set |
 
 ## Configuration
 
-`config/ironjaw.toml` supports 13 sections:
+`config/ironjaw.toml.example` is the annotated reference. Every section is
+optional except `[server]` and `[auth]`, and any value may be written as
+`"${ENV_VAR}"` to keep secrets out of the file.
 
 ```toml
 [server]
@@ -115,90 +137,53 @@ host = "127.0.0.1"
 port = 18794
 
 [auth]
-token = "your-secret-token"
-
-[audit]
-database_path = "data/audit.db"
-
-[logging]
-level = "info"
-format = "pretty"  # or "json"
+token = "${IRONJAW_AUTH_TOKEN}"
 
 [llm]
-# Provider selection: llama-server or openai
 default_provider = "llama-server"
-
-[session]
-database_path = "data/sessions.db"
-context_token_limit = 32768
-
-[security]
-rate_limit_enabled = false
-sanitize_enabled = true
-hitl_timeout_secs = 30
-
-[tools]
-working_dir = "."
-shell_timeout_secs = 30
 
 [brain]
 enabled = false
-database_path = "data/brain.db"
 embedding_url = "http://localhost:8080"
-embedding_model = "nomic-embed-text"
-auto_recall_top_k = 3
-max_memories = 10000
-
-[integrations]
-# Search, CC Bridge, CC Chronicle, git, Home Assistant, secrets vault
-
-[proactive]
-# Cron schedules and workflow DAG definitions
-
-[voice]
-# STT (Whisper) and TTS (Orpheus) endpoint configuration
-
-[vision]
-# Image size limits, accepted formats, base64 encoding settings
 ```
 
-## Endpoints
+## Clients
 
-| Endpoint | Method | Description |
-|---|---|---|
-| `/health` | GET | Health check (JSON) with uptime |
-| `/ws` | WebSocket | Protocol v4 WebSocket (primary interface) |
-| `/v1/chat/completions` | POST | OpenAI-compatible chat completion (streaming + non-streaming) |
-| `/v1/models` | GET | List available models (OpenAI format) |
-| `/v1/embeddings` | POST | Generate embeddings (proxied to llama-server) |
-| `/api/dashboard/*` | GET/POST | Dashboard REST API (sessions, metrics, config, brain) |
-| `/api/brain/pending` | GET | List pending memories awaiting approval |
-| `/api/brain/pending/{id}/approve` | POST | Approve a pending memory -> permanent UserStated memory |
-| `/api/brain/pending/{id}/reject` | POST | Reject a pending memory (soft delete) |
-| `/api/brain/browse` | GET | Paginated memory browser (scope_prefix, trust_level_min, type, sort) |
-| `/api/mobile/*` | GET/POST | Mobile-optimized endpoints for Dr. CLAW app |
-| `/mcp` | POST | Native MCP Streamable HTTP -- 17 brain tools. Bearer token (`[server] mcp_token`) required except from loopback; unregistered when the token is unset |
-| MCP stdio | -- | `--mcp-server` mode, same 17 tools, for local clients |
-| A2A HTTP | POST | Agent-to-Agent task delegation and discovery |
+[Dr. CLAW](https://github.com/scaso01/dr-claw-app) is the native Android client
+for this gateway: Kotlin and Jetpack Compose, with the same Protocol v4
+transport. The built-in web dashboard ships in `ironjaw-ws` and needs no
+separate deployment.
 
 ## Documentation
 
-| File | Description |
+| File | Contents |
 |---|---|
-| `CLAUDE.md` | Developer reference: build, test, architecture, all method signatures |
-| `SETUP.md` | Installation and first-run configuration guide |
-| `CHANGELOG.md` | Version history and release notes |
-| `REQUIREMENTS.md` | Full feature requirements for all 13 phases |
-| `HANDOFF.md` | Session handoff notes and phase completion status |
-| `docs/AUDIT_BASELINE.md` | Audit trail schema, event types, and compliance notes |
+| [`SETUP.md`](SETUP.md) | Installation and first-run configuration |
+| [`docs/protocol-v4.md`](docs/protocol-v4.md) | Frame types and the full method reference |
+| [`docs/subsystems.md`](docs/subsystems.md) | How the major subsystems fit together |
+| [`docs/configuration.md`](docs/configuration.md) | Every config key |
+| [`docs/project-structure.md`](docs/project-structure.md) | Crate layout |
+| [`REQUIREMENTS.md`](REQUIREMENTS.md) | Feature requirements by phase |
+| [`CHANGELOG.md`](CHANGELOG.md) | Version history |
 
-## Port Allocation
+## Testing
 
-| Port | Service |
-|---|---|
-| 18794 | Ironjaw (development) |
-| 18789 | OpenClaw Gateway (retired -- superseded by Ironjaw) |
-| 18790 | CC Bridge (legacy) |
-| 18793 | CC Chronicle (legacy) |
-| 8080 | llama-server |
-| 443 | Caddy (TLS termination) |
+```bash
+cargo test --workspace
+```
+
+The dashboard end-to-end suite drives a real browser against a running gateway,
+so it is marked `#[ignore]` and excluded from the default run. To exercise it,
+start a gateway, then:
+
+```bash
+export IRONJAW_AUTH_TOKEN="the token that gateway is running with"
+cargo test -p ironjaw-ws --test dashboard_tests -- --ignored
+```
+
+Tests that shell out to `ripgrep` skip themselves when it is not installed
+rather than failing, so a missing optional dependency never turns the suite red.
+
+## License
+
+AGPL-3.0-or-later. See [LICENSE](LICENSE).

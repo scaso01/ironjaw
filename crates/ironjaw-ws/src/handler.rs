@@ -7954,19 +7954,19 @@ async fn handle_chronicle_proxy(
 
 // -- Dr. CLAW RPC equivalent handlers --
 
-/// Handle project.status — read JobHunter run_history.json and return last completed run
+/// Handle project.status — read ExamplePipeline run_history.json and return last completed run
 async fn handle_project_status(id: Uuid, params: &serde_json::Value) -> Frame {
     let project = params
         .get("project")
         .and_then(|v| v.as_str())
-        .unwrap_or("jobhunter");
+        .unwrap_or("example-pipeline");
 
     let state_path = match project {
-        "jobhunter" => {
+        "example-pipeline" => {
             let home = std::env::var("USERPROFILE")
                 .or_else(|_| std::env::var("HOME"))
                 .unwrap_or_default();
-            format!("{home}/Projects/JobHunter/run_history.json")
+            format!("{home}/Projects/ExamplePipeline/run_history.json")
         }
         _ => return Frame::err(id, "UNKNOWN_PROJECT", format!("Unknown project: {project}")),
     };
@@ -8010,9 +8010,9 @@ async fn handle_file_get(id: Uuid, params: &serde_json::Value, _state: &AppState
     // Security: only allow files under known safe directories
     let allowed_win = [
         "C:\\Users\\deploy\\Projects\\",
-        "C:\\Users\\deploy\\clawd\\",
+        "C:\\Users\\deploy\\workspace\\",
     ];
-    let allowed_bash = ["/c/Users/deploy/Projects/", "/c/Users/deploy/clawd/"];
+    let allowed_bash = ["/c/Users/deploy/Projects/", "/c/Users/deploy/workspace/"];
 
     let is_allowed = allowed_win
         .iter()

@@ -1047,12 +1047,12 @@ impl Brain {
             (
                 &[
                     "project",
-                    "jobhunter",
+                    "example-pipeline",
                     "quant",
                     "herby",
                     "chronicle",
                     "paint",
-                    "deco-monitor",
+                    "mesh-monitor",
                 ],
                 "Projects",
             ),

@@ -2107,10 +2107,12 @@ mod tests {
 
     #[test]
     fn test_browse_params_with_scope_and_trust() {
-        let json =
-            r#"{"scope_prefix":"/wiki/yt-intel/","trust_level_min":2,"page":1,"per_page":20}"#;
+        let json = r#"{"scope_prefix":"/wiki/research-notes/","trust_level_min":2,"page":1,"per_page":20}"#;
         let params: BrowseParams = serde_json::from_str(json).unwrap();
-        assert_eq!(params.scope_prefix.as_deref(), Some("/wiki/yt-intel/"));
+        assert_eq!(
+            params.scope_prefix.as_deref(),
+            Some("/wiki/research-notes/")
+        );
         assert_eq!(params.trust_level_min, Some(2));
         assert_eq!(params.page, Some(1));
     }

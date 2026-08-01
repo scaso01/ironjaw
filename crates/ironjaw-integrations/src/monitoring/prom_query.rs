@@ -3,7 +3,7 @@ use ironjaw_tools::{Tool, ToolContext, ToolResult};
 use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
-/// Prometheus PromQL query tool — for ISP-monitor metrics + node-exporter.
+/// Prometheus PromQL query tool — for link-monitor metrics + node-exporter.
 pub struct PromQueryTool {
     base_url: String,
     client: reqwest::Client,

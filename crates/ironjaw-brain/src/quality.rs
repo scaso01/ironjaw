@@ -680,7 +680,7 @@ mod tests {
         // These all passed the old filter because they have specifics, but
         // they describe transient operational state, not durable facts.
         let cases = vec![
-            "Executed diagnostic command on deploy@192.0.2.20: docker ps --filter 'name=PaintTrack' --format 'table {{.Names}}\\t{{.Status}}\\t{{.Ports}}'",
+            "Executed diagnostic command on deploy@192.0.2.20: docker ps --filter 'name=ColorCatalog' --format 'table {{.Names}}\\t{{.Status}}\\t{{.Ports}}'",
             "Validated that all 26 dashboards transitioned from RED to GREEN status with optimized resource allocation",
             "Verified diagnostic test output across all running containers with healthcheck parameters",
             "Deployed monitoring agent to cc-chronicle container for real-time metrics",
@@ -721,7 +721,7 @@ mod tests {
             "DNS caching strategy implemented for smartnews.com and herby-strout.io domains",
             "llama-server configured with --cache-type-k q8_0 --cache-type-v q8_0 for 35B models",
             "Ironjaw gateway listens on 0.0.0.0:18794 for LAN reachability from docker-host",
-            "Canary smoke test auto-invokes on JobHunter pipeline startup",
+            "Canary smoke test auto-invokes on ExamplePipeline pipeline startup",
         ];
         for content in durable {
             assert!(

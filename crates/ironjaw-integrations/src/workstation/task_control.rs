@@ -23,7 +23,7 @@ impl Tool for TaskControlTool {
         "task_control"
     }
     fn description(&self) -> &str {
-        "Manage Windows scheduled tasks on workstation: query (list/status), run (start), end (terminate). Use for operational control of workstation services like Ironjaw Gateway, CC Bridge, Caddy, Llama Server, JobHunter Dashboard."
+        "Manage Windows scheduled tasks on workstation: query (list/status), run (start), end (terminate). Use for operational control of workstation services like Ironjaw Gateway, CC Bridge, Caddy, Llama Server, ExamplePipeline Dashboard."
     }
     fn schema(&self) -> serde_json::Value {
         serde_json::json!({

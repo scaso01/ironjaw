@@ -2716,8 +2716,8 @@ mod tests {
             .unwrap();
         store
             .add_memory(&NewMemory {
-                content: "JobHunter uses Python".to_string(),
-                scope: Some("/project/jobhunter".to_string()),
+                content: "ExamplePipeline uses Python".to_string(),
+                scope: Some("/project/example-pipeline".to_string()),
                 ..test_memory()
             })
             .await
@@ -2734,11 +2734,11 @@ mod tests {
         assert_eq!(decisions.len(), 1);
         assert_eq!(decisions[0].content, "Ironjaw decision: use axum");
 
-        let jobhunter = store
-            .query_by_scope("/project/jobhunter", 10)
+        let example_pipeline = store
+            .query_by_scope("/project/example-pipeline", 10)
             .await
             .unwrap();
-        assert_eq!(jobhunter.len(), 1);
+        assert_eq!(example_pipeline.len(), 1);
     }
 
     #[tokio::test]
@@ -2815,9 +2815,9 @@ mod tests {
             .unwrap();
         store
             .add_memory(&NewMemory {
-                content: "Deploy JobHunter procedure".to_string(),
+                content: "Deploy ExamplePipeline procedure".to_string(),
                 memory_type: Some("procedure".to_string()),
-                scope: Some("/project/jobhunter".to_string()),
+                scope: Some("/project/example-pipeline".to_string()),
                 procedure: Some(ProcedureMeta {
                     trigger: "deploy".to_string(),
                     steps: vec!["test".to_string(), "push".to_string()],

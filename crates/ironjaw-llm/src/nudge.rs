@@ -446,8 +446,8 @@ mod tests {
     fn folders() -> Vec<String> {
         vec![
             "ironjaw".to_string(),
-            "JobHunter".to_string(),
-            "blackwood-estate".to_string(),
+            "ExamplePipeline".to_string(),
+            "example-project".to_string(),
             "monster-search".to_string(),
             "ai".to_string(), // too short — should be ignored
         ]
@@ -465,7 +465,7 @@ mod tests {
     #[test]
     fn test_wrong_tool_fires_for_hyphenated_match() {
         let nudge = wrong_tool_nudge(
-            "tell me about blackwood-estate progress",
+            "tell me about example-project progress",
             "web_search",
             &folders(),
         );
@@ -511,7 +511,9 @@ mod tests {
 
     #[test]
     fn test_wrong_tool_fires_for_zoekt() {
-        let nudge = wrong_tool_nudge("show me jobhunter logs", "zoekt_search", &folders());
+        // Lower-case query against the CamelCase folder name: the point of this
+        // case is that matching ignores case.
+        let nudge = wrong_tool_nudge("show me examplepipeline logs", "zoekt_search", &folders());
         assert!(nudge.is_some());
     }
 }

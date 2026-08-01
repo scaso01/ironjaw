@@ -131,14 +131,42 @@ pub async fn serve(host: &str, port: u16, state: AppState) -> anyhow::Result<()>
         "Ironjaw WebSocket server starting"
     );
 
-    // Use SO_REUSEADDR to bind over zombie/TIME_WAIT sockets
     let socket = socket2::Socket::new(socket2::Domain::IPV4, socket2::Type::STREAM, None)?;
+
+    // SO_REUSEADDR means two different things on the two platforms, and only one
+    // of them is what we want.
+    //
+    // On Unix it does what the name suggests: bind over a socket still sitting in
+    // TIME_WAIT, so a restart does not have to wait out the timeout. An address
+    // that is actively LISTENING is still refused.
+    //
+    // On Windows it also lets a completely separate process bind an address this
+    // process is already listening on, as long as both set the option. Both sockets
+    // then exist and which one receives a given connection is undefined. For a
+    // gateway that authenticates clients with a bearer token that is a hijack:
+    // anything running as the same user takes delivery of connections meant for us,
+    // auth frames included.
+    //
+    // Measured on Windows 11, two sockets on 127.0.0.1 and the same port:
+    //   both set SO_REUSEADDR  -> second bind SUCCEEDS (the hijack)
+    //   neither sets it        -> second bind refused, WSAEADDRINUSE
+    //   only the second sets it -> second bind refused
+    //
+    // So setting it unconditionally was the thing creating the hole. It is Unix-only
+    // now, and Windows listeners have no TIME_WAIT problem that needs the workaround.
+    //
+    // Residual, not closed here: Windows still allows a bind to a *specific* address
+    // when an existing socket holds the *wildcard* 0.0.0.0 on that port, even with
+    // neither side setting SO_REUSEADDR. Closing that needs SO_EXCLUSIVEADDRUSE
+    // (setsockopt option -5) on this socket, which socket2 does not surface.
+    #[cfg(not(windows))]
     socket.set_reuse_address(true)?;
+
     socket.set_nonblocking(true)?;
     socket.bind(&socket2::SockAddr::from(addr))?;
     socket.listen(1024)?;
     let listener = tokio::net::TcpListener::from_std(std::net::TcpListener::from(socket))?;
-    info!(address = %addr, "Listening (SO_REUSEADDR)");
+    info!(address = %addr, "Listening");
 
     // Peer addresses are needed so /mcp can recognise loopback callers; see
     // `mcp_http::is_local`. Handlers take `Option<ConnectInfo<_>>`, so routers served

@@ -42,7 +42,7 @@ TESTS = [
     {
         "name": "T2_specific_project_listing",
         "suite": "baseline",
-        "prompt": "List the files in the JobHunter project.",
+        "prompt": "List the files in the ExamplePipeline project.",
         "expect_tools": ["list_files"],
         "forbid_tools": ["monster_search", "web_search", "searxng"],
         "expect_in_output": [],
@@ -74,7 +74,7 @@ TESTS = [
         "expect_in_output": [],
     },
     {
-        "name": "S1_chain_describe_jobhunter",
+        "name": "S1_chain_describe_example-pipeline",
         "suite": "slice1",
         "prompt": "Look at the Cargo.toml of ironjaw and tell me the package name and version.",
         "expect_tools": ["read_file"],
