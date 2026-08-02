@@ -29,7 +29,11 @@ if not AUTH_TOKEN:
     raise SystemExit(
         f"set {_TOKEN_ENV} to the token this gateway was configured with"
     )
-WORKING_DIR = "C:/Users/deploy/Projects/ironjaw"
+# This repo, as the gateway's tools see it. Override if the gateway runs elsewhere.
+WORKING_DIR = os.environ.get(
+    "IRONJAW_REPO",
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace("\\", "/"),
+)
 
 # Force UTF-8 stdout so emoji in chat output don't crash on Windows cp1252.
 try:
@@ -188,7 +192,7 @@ async def chat_run(ws, prompt, timeout=240, abort_after_s=None, policy=None):
 async def p1_apply_patch(ws):
     """Seed a small file, then ask LLM to modify it via apply_patch.
 
-    Gateway working_dir is C:/Users/deploy/Projects, so paths must be relative to that.
+    Paths must be relative to the gateway's configured [tools] working_dir.
     """
     seed_path = "ironjaw/scripts/parity_target.txt"  # relative to gateway working_dir
     seed_content = "line one\nline two\nline three\n"
@@ -239,7 +243,7 @@ async def p1_apply_patch(ws):
 async def p2_multistep_plan(ws):
     sid = await session_create(ws, "p2_multistep")
     await session_switch(ws, sid)
-    # Working_dir is C:/Users/deploy/Projects, so prefix with ironjaw/
+    # Paths are relative to the gateway's working_dir, so prefix with ironjaw/
     prompt = (
         "Three tasks: (1) read ironjaw/crates/ironjaw-llm/Cargo.toml, "
         "(2) list the files in ironjaw/crates/ironjaw-llm/src, "

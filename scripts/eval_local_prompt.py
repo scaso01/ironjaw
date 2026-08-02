@@ -30,7 +30,7 @@ import urllib.request
 import uuid
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))       # ...\ironjaw
-BASE = os.path.dirname(REPO)                                             # C:\Users\deploy\Projects (tool working_dir)
+BASE = os.path.dirname(REPO)                                             # the dir holding this repo (tool working_dir)
 FIXTURES = os.path.join(REPO, "data-dev", "eval_fixtures")
 FIX_BARE = "ironjaw/data-dev/eval_fixtures"
 ANNOUNCE = re.compile(r"\b(let me|i'?ll|i will|let's|i'?m going to|i am going to|going to)\b", re.I)

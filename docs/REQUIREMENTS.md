@@ -1529,7 +1529,7 @@ Complex tasks benefit from specialized sub-agents (a coding sub-agent, a researc
 An `adb` tool must allow agents to run Android Debug Bridge commands locally on workstation.
 
 **Rationale:**
-The user has active Android development (Dr. CLAW, re-lab) and stated this has "high personal value." ADB tool access allows agents to assist with device testing, log capture, and APK deployment.
+The gateway has a first-party Android client, so agents are routinely asked to help with device testing, log capture and APK deployment. ADB tool access lets them do that directly instead of handing back shell commands to paste.
 
 **Acceptance Criteria:**
 - [ ] `adb` tool (Confirm tier): accepts an `action` from the allowlist (`shell`, `push`, `pull`, `install`, `logcat`, `devices`) and relevant args

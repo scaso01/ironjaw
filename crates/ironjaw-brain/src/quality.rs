@@ -449,7 +449,7 @@ mod tests {
 
     #[test]
     fn test_path_content_scored_well() {
-        let content = "Brain database located at /c/Users/deploy/Projects/ironjaw/data/brain.db";
+        let content = "Brain database located at /c/code/ironjaw/data/brain.db";
         let score = content_quality_score(content);
         assert!(score >= 0.4, "score={score}");
     }

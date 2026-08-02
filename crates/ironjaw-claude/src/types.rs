@@ -139,25 +139,31 @@ fn default_cc_enabled() -> bool {
 }
 fn default_claude_cmd() -> String {
     if cfg!(windows) {
-        r"C:\Users\deploy\AppData\Roaming\npm\claude.cmd".to_string()
+        // npm installs the shim at %APPDATA%\npm. Falling back to the bare name
+        // still gives PATH resolution a chance if APPDATA is unset.
+        std::env::var("APPDATA")
+            .map(|appdata| format!(r"{appdata}\npm\claude.cmd"))
+            .unwrap_or_else(|_| "claude.cmd".to_string())
     } else {
         "claude".to_string()
     }
 }
 fn default_cwd() -> String {
-    if cfg!(windows) {
-        r"C:\Users\deploy\Projects".to_string()
-    } else {
-        "/home/deploy/Projects".to_string()
-    }
+    // There is no universal right answer, so default to wherever the gateway was
+    // started. Point `[claude] cwd` at your code directory to change it.
+    ".".to_string()
 }
 fn default_sessions_dir() -> String {
     if cfg!(windows) {
-        let home = std::env::var("USERPROFILE").unwrap_or_else(|_| r"C:\Users\deploy".to_string());
-        format!(r"{home}\.claude\projects")
+        match std::env::var("USERPROFILE") {
+            Ok(home) => format!(r"{home}\.claude\projects"),
+            Err(_) => r".claude\projects".to_string(),
+        }
     } else {
-        let home = std::env::var("HOME").unwrap_or_else(|_| "/home/deploy".to_string());
-        format!("{home}/.claude/projects")
+        match std::env::var("HOME") {
+            Ok(home) => format!("{home}/.claude/projects"),
+            Err(_) => ".claude/projects".to_string(),
+        }
     }
 }
 fn default_timeout_ms() -> u64 {

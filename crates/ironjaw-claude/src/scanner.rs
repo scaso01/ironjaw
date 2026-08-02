@@ -301,11 +301,11 @@ pub fn calculate_context_pct(
     Some((total as f64 / DEFAULT_CONTEXT_WINDOW * 100.0) as f32)
 }
 
-/// Default location of the shared title cache (written by `session-namer.py` /
-/// cc-bridge — the canonical store of LLM-generated session titles).
-/// Override with the `IRONJAW_TITLES_CACHE` env var.
-const DEFAULT_TITLES_CACHE: &str =
-    r"C:\Users\deploy\Projects\re-lab\android\dr-claw-app\cc-bridge\data\titles.json";
+/// Default location of the shared title cache, the canonical store of
+/// LLM-generated session titles. cc-bridge writes it; the gateway only reads it.
+/// Relative to the gateway's working directory. Point `IRONJAW_TITLES_CACHE` at
+/// cc-bridge's own data directory if it runs somewhere else.
+const DEFAULT_TITLES_CACHE: &str = "data/titles.json";
 
 /// Load the shared title cache as a `session_id -> title` map.
 ///
@@ -477,8 +477,8 @@ pub fn lookup_session_cwd(session_id: &str, sessions_dir: &Path) -> Option<Strin
 
 /// Decode a Claude Code project directory name back to a filesystem path.
 ///
-/// Claude Code encodes paths like `C:\Users\deploy\Projects` as
-/// `C--Users-deploy-Projects` (drive colon becomes `--`, path separators become `-`).
+/// Claude Code encodes paths like `C:\code\my-app` as `C--code-my-app`
+/// (drive colon becomes `--`, path separators become `-`).
 ///
 /// This is a best-effort decode: since `-` in directory names is ambiguous with the
 /// path separator encoding, we try the naive decode first and verify the path exists.

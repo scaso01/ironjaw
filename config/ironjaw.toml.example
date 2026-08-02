@@ -5,8 +5,9 @@ port = 18794
 openai_compat = true
 
 [auth]
-# Set via IRONJAW_AUTH_TOKEN environment variable.
-# config.rs must be updated to resolve ${IRONJAW_AUTH_TOKEN} from env.
+# Any "${VAR}" placeholder in a string value is resolved from the environment at
+# load time, so the token never has to be written into this file. IRONJAW_AUTH_TOKEN
+# also overrides this value directly if it is set.
 token = "${IRONJAW_AUTH_TOKEN}"
 
 [audit]
@@ -26,7 +27,9 @@ rate_limit_enabled = true
 sanitize_enabled = true
 
 [tools]
-working_dir = "C:\\Users\\deploy\\Projects"
+# Root the file and shell tools are allowed to work under. Set this to your own
+# code directory; "." keeps them inside the directory the gateway was started in.
+working_dir = "."
 shell_timeout_secs = 30
 
 [brain]
@@ -73,12 +76,14 @@ max_context_budget = 2000
 
 [brain.indexers.chronicle]
 enabled = true
-db_path = "C:/Users/deploy/Projects/cc-chronicle/data/chronicle.db"
+# Path to the chronicle database this indexer should follow.
+db_path = "data/chronicle.db"
 poll_interval_secs = 60
 
 [brain.indexers.markdown]
 enabled = true
-watch_dirs = ["C:/Users/deploy/.claude/projects/C--Users-deploy/memory"]
+# Directories of markdown to index into the brain. Absolute paths are fine.
+watch_dirs = ["docs"]
 debounce_secs = 5
 
 [integrations]

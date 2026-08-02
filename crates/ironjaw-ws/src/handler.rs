@@ -8007,17 +8007,29 @@ async fn handle_file_get(id: Uuid, params: &serde_json::Value, _state: &AppState
     // Normalize backslashes for consistent prefix matching
     let normalized = path.replace('/', "\\");
 
-    // Security: only allow files under known safe directories
-    let allowed_win = [
-        "C:\\Users\\deploy\\Projects\\",
-        "C:\\Users\\deploy\\workspace\\",
-    ];
-    let allowed_bash = ["/c/Users/deploy/Projects/", "/c/Users/deploy/workspace/"];
+    // Security: only allow files under known safe directories. Rooted at the home
+    // of whoever the gateway runs as rather than one hardcoded account, so the
+    // allowlist is the same shape for every install. Fails closed when neither
+    // USERPROFILE nor HOME is set.
+    let home = std::env::var("USERPROFILE")
+        .or_else(|_| std::env::var("HOME"))
+        .unwrap_or_default();
+    if home.is_empty() {
+        return Frame::err(id, "FORBIDDEN", "Path not in allowlist");
+    }
+    let home_win = home.replace('/', "\\");
+    let home_win = home_win.trim_end_matches('\\');
+    // Clients send either the Windows or the Git Bash spelling: C:\Users\me and
+    // /c/Users/me are the same directory, so accept both.
+    let home_bash = match home_win.split_once(':') {
+        Some((drive, rest)) => format!("/{}{}", drive.to_lowercase(), rest.replace('\\', "/")),
+        None => home_win.replace('\\', "/"),
+    };
 
-    let is_allowed = allowed_win
-        .iter()
-        .any(|prefix| normalized.starts_with(prefix))
-        || allowed_bash.iter().any(|prefix| path.starts_with(prefix));
+    let is_allowed = ["Projects", "workspace"].iter().any(|dir| {
+        normalized.starts_with(&format!("{home_win}\\{dir}\\"))
+            || path.starts_with(&format!("{home_bash}/{dir}/"))
+    });
     if !is_allowed {
         return Frame::err(id, "FORBIDDEN", "Path not in allowlist");
     }

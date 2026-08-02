@@ -34,7 +34,7 @@ TESTS = [
     {
         "name": "T1_local_count",
         "suite": "baseline",
-        "prompt": "How many folders are in C:/Users/deploy/Projects ?",
+        "prompt": "How many folders are in the current working directory?",
         "expect_tools": ["list_files"],
         "forbid_tools": ["monster_search", "web_search", "searxng"],
         "expect_in_output": ["folders"],
