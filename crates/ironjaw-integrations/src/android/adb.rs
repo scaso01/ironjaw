@@ -348,7 +348,7 @@ impl Tool for AdbTool {
                         },
                         "serial": {
                             "type": "string",
-                            "description": "Target device serial (e.g. '198.51.100.206:43433' for the phone, '192.168.1.30:5555' for a Fire TV). Omit to default to the phone. Use action 'devices' to list connected serials."
+                            "description": "Target device serial (e.g. '198.51.100.206:43433' for the phone, '192.0.2.30:5555' for a Fire TV). Omit to default to the phone. Use action 'devices' to list connected serials."
                         }
                     }
                 }
@@ -735,25 +735,25 @@ mod tests {
     #[test]
     fn test_resolve_serial_explicit_passthrough() {
         let out = "List of devices attached\n198.51.100.206:43433\tdevice\n";
-        let r = AdbTool::resolve_serial(Some("192.168.1.30:5555"), out).unwrap();
-        assert_eq!(r, Some("192.168.1.30:5555".to_string()));
+        let r = AdbTool::resolve_serial(Some("192.0.2.30:5555"), out).unwrap();
+        assert_eq!(r, Some("192.0.2.30:5555".to_string()));
     }
 
     #[test]
     fn test_resolve_serial_defaults_to_phone() {
         let out = "List of devices attached\n\
-                   192.168.1.30:5555\tdevice\n\
+                   192.0.2.30:5555\tdevice\n\
                    198.51.100.206:43433\tdevice\n\
-                   192.168.1.37:5555\tdevice\n";
+                   192.0.2.37:5555\tdevice\n";
         let r = AdbTool::resolve_serial(None, out).unwrap();
         assert_eq!(r, Some("198.51.100.206:43433".to_string()));
     }
 
     #[test]
     fn test_resolve_serial_single_device() {
-        let out = "List of devices attached\n192.168.1.30:5555\tdevice\n";
+        let out = "List of devices attached\n192.0.2.30:5555\tdevice\n";
         let r = AdbTool::resolve_serial(None, out).unwrap();
-        assert_eq!(r, Some("192.168.1.30:5555".to_string()));
+        assert_eq!(r, Some("192.0.2.30:5555".to_string()));
     }
 
     #[test]
@@ -766,11 +766,11 @@ mod tests {
     #[test]
     fn test_resolve_serial_ambiguous_errors() {
         let out = "List of devices attached\n\
-                   192.168.1.30:5555\tdevice\n\
-                   192.168.1.37:5555\tdevice\n";
+                   192.0.2.30:5555\tdevice\n\
+                   192.0.2.37:5555\tdevice\n";
         let err = AdbTool::resolve_serial(None, out).unwrap_err();
         assert!(err.contains("multiple devices"));
-        assert!(err.contains("192.168.1.30:5555"));
+        assert!(err.contains("192.0.2.30:5555"));
     }
 
     #[test]

@@ -1,6 +1,8 @@
 # Build artifacts
 /target
 **/target/
+__pycache__/
+*.pyc
 
 # Runtime databases
 *.db

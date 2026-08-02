@@ -1226,10 +1226,10 @@ pub struct McpConfig {
 ///
 /// ```toml
 /// [[mcp.servers]]
-/// name    = "claude-peers"
+/// name    = "filesystem"
 /// transport = "stdio"
-/// command = "bun"
-/// args    = ["run", "/path/to/claude-peers-mcp.ts"]
+/// command = "npx"
+/// args    = ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/dir"]
 ///
 /// [[mcp.servers]]
 /// name      = "my-http-server"
@@ -1246,8 +1246,8 @@ pub struct McpConfig {
 pub enum McpServerConfigEntry {
     /// Stdio-based MCP server (spawn a subprocess).
     Stdio {
-        /// Logical name used as the tool prefix (e.g. `"claude-peers"` →
-        /// `mcp__claude-peers__<tool>`).
+        /// Logical name used as the tool prefix (e.g. `"filesystem"` →
+        /// `mcp__filesystem__<tool>`).
         name: String,
         /// Executable to launch (e.g. `"bun"`, `"python"`).
         command: String,

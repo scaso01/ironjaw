@@ -182,15 +182,15 @@ mod tests {
 
     #[test]
     fn test_name_prefix() {
-        let client = make_client("claude-peers");
-        let tool = make_tool("list_peers", Some("List connected peers"));
+        let client = make_client("filesystem");
+        let tool = make_tool("read_file", Some("Read a file"));
         let remote = McpRemoteTool::new(client, tool);
-        assert_eq!(remote.name(), "mcp__claude-peers__list_peers");
+        assert_eq!(remote.name(), "mcp__filesystem__read_file");
     }
 
     #[test]
     fn test_description_present() {
-        let client = make_client("emu-mcp");
+        let client = make_client("automation");
         let tool = make_tool("tap_screen", Some("Tap at coordinates"));
         let remote = McpRemoteTool::new(client, tool);
         assert_eq!(remote.description(), "Tap at coordinates");
@@ -198,12 +198,12 @@ mod tests {
 
     #[test]
     fn test_description_fallback() {
-        let client = make_client("emu-mcp");
+        let client = make_client("automation");
         let tool = make_tool("tap_screen", None);
         let remote = McpRemoteTool::new(client, tool);
         // Falls back to generated description containing server + tool name.
         assert!(remote.description().contains("tap_screen"));
-        assert!(remote.description().contains("emu-mcp"));
+        assert!(remote.description().contains("automation"));
     }
 
     #[test]

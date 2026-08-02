@@ -405,7 +405,7 @@ fn build_extraction_prompt(user_message: &str, assistant_message: &str) -> Strin
          \n\
          TIME TEST: Before extracting, ask \"Will this still be true in 6 months?\"\n\
          - \"Container restarted after config change\" → NO (event)\n\
-         - \"All 26 dashboards transitioned from RED to GREEN\" → NO (status snapshot)\n\
+         - \"All dashboards transitioned from RED to GREEN\" → NO (status snapshot)\n\
          - \"Healthcheck tests validated for all running containers\" → NO (past-tense ops)\n\
          - \"Ironjaw gateway listens on port 18794\" → YES (durable config)\n\
          - \"AdGuard Home is primary DNS resolver for Meshnet (192.0.2.20:53, DoH enabled)\" → YES (architectural decision)\n\
@@ -423,7 +423,7 @@ fn build_extraction_prompt(user_message: &str, assistant_message: &str) -> Strin
          BAD: \"Initiate research on llama-server replacement\"\n\
          GOOD: (NOOP — this is a task, not a fact worth remembering)\n\
          \n\
-         BAD: \"All 26 dashboards transitioned from RED to GREEN status\"\n\
+         BAD: \"All dashboards transitioned from RED to GREEN status\"\n\
          GOOD: (NOOP — status snapshot, not durable)\n\
          \n\
          BAD: \"Executed diagnostic command on deploy@192.0.2.20: docker ps --filter ...\"\n\
