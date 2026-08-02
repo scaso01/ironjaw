@@ -389,7 +389,9 @@ mod tests {
     /// stdin, parses it, and writes back a minimal `{"jsonrpc":"2.0","id":<id>,"result":{}}`
     /// line to stdout.  Node.js is required for this test to run; it is skipped
     /// on machines without Node.
-    #[cfg(target_family = "unix")]
+    // Not gated to unix: this test was, which meant it never ran on a Windows
+    // developer machine and its deadlock went unnoticed until CI. It skips itself
+    // when node is missing, so running it everywhere costs nothing.
     #[tokio::test]
     async fn test_stdio_transport_round_trip_node() {
         // Skip if node is not available
@@ -400,14 +402,23 @@ mod tests {
         {
             return;
         }
+        // Reply per newline-delimited line, the way a real MCP stdio server does.
+        // Waiting for stdin 'end' instead would deadlock: `send` keeps the pipe open
+        // for the life of the transport, so 'end' never fires and every request
+        // times out.
         let script = r#"
 process.stdin.resume();
-const chunks = [];
-process.stdin.on('data', d => chunks.push(d));
-process.stdin.on('end', () => {
-  const line = Buffer.concat(chunks).toString().trim();
-  const req = JSON.parse(line);
-  process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:req.id,result:{}}) + '\n');
+let buf = '';
+process.stdin.on('data', d => {
+  buf += d;
+  let i;
+  while ((i = buf.indexOf('\n')) >= 0) {
+    const line = buf.slice(0, i).trim();
+    buf = buf.slice(i + 1);
+    if (!line) continue;
+    const req = JSON.parse(line);
+    process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:req.id,result:{}}) + '\n');
+  }
 });
 "#;
         let transport = StdioTransport::spawn(
