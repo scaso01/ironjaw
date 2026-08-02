@@ -1,11 +1,18 @@
 use crate::types::{Tool, ToolContext, ToolResult};
 use ironjaw_security::PermissionTier;
-use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
+// The whole implementation is cfg'd out off Windows, where the tool just reports
+// UNSUPPORTED. Without these gates the import and both constants are dead code on
+// Linux and macOS, which fails a `-D warnings` build.
+#[cfg(windows)]
 use super::shell::sanitize_env;
+#[cfg(windows)]
+use std::time::Duration;
 
+#[cfg(windows)]
 const DEFAULT_TIMEOUT_SECS: u64 = 30;
+#[cfg(windows)]
 const MAX_OUTPUT_BYTES: usize = 64 * 1024; // 64 KB
 
 /// Execute PowerShell commands on Windows.
