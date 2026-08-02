@@ -117,7 +117,7 @@ A/B probe on the exact bare-model client path, fixed in four deployed phases.
 - 3 new tests (blocking-id skip, tag-supersession-beats-similarity, explicit-supersedes upsert). Client fix in dotfiles `scripts/memory_to_brain.py`: `supersedes` must be a JSON number — the handler's `as_i64()` silently dropped the string form the script had always sent.
 
 **Phone reachability + agentic dead-answer hardening (2026-06-26)**
-- `adb` tool now passes `-s <serial>` on every command, defaulting to the phone (Meshnet IP prefix) when no serial is given; explicit `serial` param overrides. Fixes multi-device ambiguity. Commit `6b46cdf`.
+- `adb` tool now passes `-s <serial>` on every command, defaulting to the first network-attached device when no serial is given; an explicit `serial` param overrides. Fixes multi-device ambiguity. Commit `6b46cdf`.
 - rish-over-ssh fallback: when adb can't reach the phone (wireless-debug port rotates/turns off) and the action is `shell`, the command runs on-device via Termux ssh (fixed port 8022) → Shizuku `rish` (uid 2000). Result JSON carries `"via": "rish-over-ssh"`. Commit `6b46cdf`.
 - Agentic-loop dead-answer fixes for abliterated Qwen3.6 — three failure modes that all ended a tool turn with no usable answer:
   - Blank final turn: re-prompt once ("answer now in plain text, no more tools"), then fall back to the last tool output. Commit `7ff0588`.
