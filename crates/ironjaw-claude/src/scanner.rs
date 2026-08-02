@@ -708,10 +708,10 @@ mod tests {
 
     #[test]
     fn test_extract_cwd_from_content_working_dir() {
-        let text = "Working directory: C:\\Users\\sean\\Projects\\ironjaw";
+        let text = "Working directory: C:\\Users\\deploy\\Projects\\ironjaw";
         assert_eq!(
             extract_cwd_from_content(text),
-            Some("C:\\Users\\sean\\Projects\\ironjaw".to_string())
+            Some("C:\\Users\\deploy\\Projects\\ironjaw".to_string())
         );
     }
 

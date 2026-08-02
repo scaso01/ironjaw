@@ -57,7 +57,7 @@ impl Tool for ReadFileTool {
     }
 
     fn description(&self) -> &str {
-        "Read the contents of a local file on this machine — project source, config, README, design doc. Path resolves against the working directory (C:\\Users\\deploy\\Projects)."
+        "Read the contents of a local file on this machine — project source, config, README, design doc. Paths resolve against the configured working directory."
     }
 
     fn schema(&self) -> serde_json::Value {

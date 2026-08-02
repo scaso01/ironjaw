@@ -143,7 +143,11 @@ async fn main() -> anyhow::Result<()> {
     );
 
     // Load model registry early (needed for auto-load in llama-server provider)
-    let llama_models_path = std::path::Path::new("C:\\Users\\deploy\\Scripts\\llama-models.json");
+    // Defaults next to the config so a fresh install needs no absolute path.
+    // Point IRONJAW_MODEL_REGISTRY elsewhere if the registry lives with llama.cpp.
+    let registry_path = std::env::var("IRONJAW_MODEL_REGISTRY")
+        .unwrap_or_else(|_| "config/llama-models.json".to_string());
+    let llama_models_path = std::path::Path::new(&registry_path);
     let model_registry = if llama_models_path.exists() {
         match ModelRegistry::load(llama_models_path) {
             Ok(registry) => {

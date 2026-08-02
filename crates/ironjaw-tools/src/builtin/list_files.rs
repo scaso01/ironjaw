@@ -144,7 +144,7 @@ impl Tool for ListFilesTool {
     }
 
     fn description(&self) -> &str {
-        "List entries in a local directory on this machine. Use this FIRST for any question about projects, folders, or files under C:\\Users\\deploy\\Projects. Use bare folder names (e.g. 'example-project'), not nested paths. Returns a 'count' field — use it directly without recounting."
+        "List entries in a local directory on this machine. Use this FIRST for any question about projects, folders, or files under the configured working directory. Paths resolve against that directory, so use bare folder names (e.g. 'example-project') rather than absolute or nested paths. Returns a 'count' field — use it directly without recounting."
     }
 
     fn schema(&self) -> serde_json::Value {

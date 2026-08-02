@@ -194,9 +194,12 @@ enabled = false
 
 [claude]
 enabled = true
-claude_cmd = "C:\\Users\\deploy\\AppData\\Roaming\\npm\\claude.cmd"
-default_cwd = "C:\\Users\\deploy\\Projects"
-sessions_dir = "C:\\Users\\deploy\\.claude\\projects"
+# All three are resolved from the environment when omitted: the npm shim under
+# %APPDATA%, the directory the gateway was started in, and ~/.claude/projects.
+# Uncomment and set them only if your install puts them somewhere else.
+# claude_cmd = "C:\\path\\to\\claude.cmd"
+# default_cwd = "C:\\path\\to\\your\\code"
+# sessions_dir = "C:\\path\\to\\.claude\\projects"
 timeout_ms = 120000
 idle_timeout_ms = 120000
 max_concurrent = 3

@@ -31,7 +31,7 @@ comes back.
 ## Features
 
 - **Protocol v4 over WebSocket**, 8 frame types (`req`, `res`, `stream`,
-  `event`, `cmd`, `cmd.res`, `ui`, `ui.res`) and roughly 166 methods.
+  `event`, `cmd`, `cmd.res`, `ui`, `ui.res`) and over 180 methods.
 - **LLM router** with streaming, complexity-based model selection, and
   retry, failover and cache decorators stacked over any provider.
 - **Persistent sessions** on SQLite WAL, with cursor pagination, automatic

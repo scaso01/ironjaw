@@ -350,7 +350,7 @@ impl Tool for ShellTool {
     }
 
     fn description(&self) -> &str {
-        "Execute a cmd.exe command on this Windows machine (workstation) — this runs via `cmd /C`, NOT PowerShell (use the `powershell` tool for PowerShell scripts). Use for ad-hoc system queries not covered by other tools. Working directory is C:\\Users\\deploy\\Projects. Output capped at 64KB; 30s timeout."
+        "Execute a cmd.exe command on this Windows machine — this runs via `cmd /C`, NOT PowerShell (use the `powershell` tool for PowerShell scripts). Use for ad-hoc system queries not covered by other tools. Runs in the configured working directory. Output capped at 64KB; 30s timeout."
     }
 
     fn schema(&self) -> serde_json::Value {
