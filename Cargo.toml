@@ -89,7 +89,10 @@ tokio-tungstenite = "0.26"
 reqwest = { version = "0.12", features = ["json", "stream", "multipart"] }
 
 # Concurrent collections
-dashmap = "2"
+# 2.x silently drops entries from iter() while get() still finds them, which was
+# reproducible on a two-core Linux runner and would have made commands.list and
+# /help under-report on a small host. Verified fixed on 6.x.
+dashmap = "6"
 
 # Random
 rand = "0.8"
