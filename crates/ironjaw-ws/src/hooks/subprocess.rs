@@ -30,6 +30,7 @@ use ironjaw_audit::{ActionType, AuditEntry, AuditStore};
 use ironjaw_tools::builtin::shell::sanitize_env;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
+use tracing::debug;
 use uuid::Uuid;
 
 use super::registry::Hook;
@@ -204,21 +205,37 @@ impl Hook for SubprocessHook {
         };
 
         // Write payload to child stdin, then drop to signal EOF.
+        //
+        // A hook that ignores stdin is perfectly normal, and most do. Such a hook
+        // exits straight away, and on Unix the write then fails with EPIPE while on
+        // Windows it lands in the pipe buffer and succeeds. Treating that as a hard
+        // failure loses the hook's real exit code and stderr, and does so on only
+        // one platform. So a broken pipe is not an error here: stop writing and go
+        // on to collect the child's actual outcome.
         if let Some(mut stdin) = child.stdin.take() {
-            if let Err(e) = stdin.write_all(&payload_bytes).await {
-                let _ = child.kill().await;
-                self.audit_invocation(
-                    &event_name,
-                    None,
-                    start.elapsed(),
-                    false,
-                    Some(&format!("stdin write failed: {e}")),
-                )
-                .await;
-                return HookAction::Block(format!(
-                    "subprocess hook '{}': stdin write failed: {e}",
-                    self.name
-                ));
+            match stdin.write_all(&payload_bytes).await {
+                Ok(()) => {}
+                Err(e) if e.kind() == std::io::ErrorKind::BrokenPipe => {
+                    debug!(
+                        hook = %self.name,
+                        "hook exited without reading stdin; continuing to its exit status"
+                    );
+                }
+                Err(e) => {
+                    let _ = child.kill().await;
+                    self.audit_invocation(
+                        &event_name,
+                        None,
+                        start.elapsed(),
+                        false,
+                        Some(&format!("stdin write failed: {e}")),
+                    )
+                    .await;
+                    return HookAction::Block(format!(
+                        "subprocess hook '{}': stdin write failed: {e}",
+                        self.name
+                    ));
+                }
             }
         }
 

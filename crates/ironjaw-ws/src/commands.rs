@@ -770,7 +770,21 @@ mod tests {
 
         let listing = r.list();
         let names: Vec<&str> = listing.iter().map(|c| c.name.as_str()).collect();
-        assert_eq!(names, vec!["apple", "mango", "zebra"]);
+        // Report the map's own count alongside the listing. This has failed on a
+        // two-core CI runner with an entry missing, and the two numbers say whether
+        // the insert was lost or the iteration skipped it.
+        assert_eq!(
+            names,
+            vec!["apple", "mango", "zebra"],
+            "map holds {} entries, list() returned {}, get(\"apple\") is {}",
+            r.commands.len(),
+            names.len(),
+            if r.get("apple").is_some() {
+                "present"
+            } else {
+                "MISSING"
+            },
+        );
     }
 
     #[test]
@@ -808,8 +822,25 @@ mod tests {
         let r = SlashCommandRegistry::new();
         register_all(&r);
         let names: Vec<String> = r.list().iter().map(|c| c.name.clone()).collect();
+        // Same diagnostic as registry_list_sorted: this has failed on a two-core
+        // runner with "status" absent from the listing.
+        assert_eq!(
+            r.commands.len(),
+            names.len(),
+            "map holds {} entries but list() returned {}: {names:?}",
+            r.commands.len(),
+            names.len(),
+        );
         assert!(names.contains(&"help".to_string()));
-        assert!(names.contains(&"status".to_string()));
+        assert!(
+            names.contains(&"status".to_string()),
+            "get(\"status\") is {}, listing was {names:?}",
+            if r.get("status").is_some() {
+                "present"
+            } else {
+                "MISSING"
+            },
+        );
         assert!(names.contains(&"usage".to_string()));
         assert!(names.contains(&"peers".to_string()));
         assert!(names.contains(&"search".to_string()));
