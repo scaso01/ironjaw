@@ -13,7 +13,7 @@ It talks to a local `llama-server` or any OpenAI-compatible endpoint, so the
 whole thing can run on hardware you own with no per-token bill.
 
 <p align="center">
-  <img src="docs/images/dashboard.png" alt="Ironjaw dashboard showing live sessions and gateway metrics" width="900">
+  <img src="docs/images/dashboard.png" alt="Ironjaw dashboard overview showing uptime, active sessions, connected devices and registered tools" width="900">
 </p>
 
 ## Why it exists
@@ -87,7 +87,7 @@ cargo test --workspace                          # the test suite
 ```
 
 <p align="center">
-  <img src="docs/images/cli-status.png" alt="ironjaw status output showing gateway health and connected services" width="760">
+  <img src="docs/images/health.png" alt="Ironjaw health page showing per-subsystem status, request metrics and the permission classifier" width="900">
 </p>
 
 ## Architecture
