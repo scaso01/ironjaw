@@ -170,8 +170,8 @@ mod tests {
     #[test]
     fn lan_and_public_peers_are_not_local() {
         assert!(!is_local(Some(&"192.0.2.20:51234".parse().unwrap())));
-        assert!(!is_local(Some(&"192.168.1.44:51234".parse().unwrap())));
-        assert!(!is_local(Some(&"160.79.106.34:443".parse().unwrap())));
+        assert!(!is_local(Some(&"192.168.1.100:51234".parse().unwrap())));
+        assert!(!is_local(Some(&"203.0.113.34:443".parse().unwrap())));
     }
 
     #[test]
