@@ -116,7 +116,9 @@ cargo test --workspace                          # the test suite
 | Endpoint | Method | Description |
 |---|---|---|
 | `/ws` | WebSocket | Protocol v4, the primary interface |
+| `/` | WebSocket | Same upgrade as `/ws`, for clients that connect to the root |
 | `/health` | GET | Health check with uptime |
+| `/dashboard` | GET | The web dashboard pictured above |
 | `/v1/chat/completions` | POST | OpenAI-compatible completion, streaming and not |
 | `/v1/models` | GET | Model list in OpenAI format |
 | `/v1/embeddings` | POST | Embeddings, proxied to the configured backend |

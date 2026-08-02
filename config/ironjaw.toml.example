@@ -119,14 +119,21 @@ inactivity_timeout_secs = 30
 enabled = true
 max_image_size_bytes = 10485760
 
+# SET THESE BEFORE YOUR FIRST CHAT. The gateway cannot guess what your backend
+# serves, so every id below is a placeholder and chat will fail with
+# "model not found" until you replace them. List what you actually have with:
+#   curl localhost:8080/v1/models
 [llm]
-default_model = "qwen3.5:35b-a3b-abliterated"
+default_model = "REPLACE-WITH-YOUR-MODEL-ID"
 
+# Aliases are shorthands accepted anywhere a model id is. They are not optional:
+# the [[skills]] entries further down refer to "brain", "coder" and "vision" by
+# name, so leaving one undefined breaks the skill that uses it.
 [llm.aliases]
-coder = "llama-server/qwen3-coder-next-abliterated"
-brain = "llama-server/qwen3.5:35b-a3b-abliterated"
-fast = "llama-server/qwen3.5:9b-abliterated"
-vision = "llama-server/qwen3.5:35b-a3b-abliterated"
+coder = "llama-server/REPLACE-WITH-YOUR-MODEL-ID"
+brain = "llama-server/REPLACE-WITH-YOUR-MODEL-ID"
+fast = "llama-server/REPLACE-WITH-YOUR-MODEL-ID"
+vision = "llama-server/REPLACE-WITH-YOUR-MODEL-ID"
 cloud = "anthropic/claude-sonnet-4-6"
 opus = "anthropic/claude-opus-4-6"
 gemini = "gemini/gemini-3-flash"
