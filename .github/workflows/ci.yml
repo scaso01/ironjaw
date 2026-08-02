@@ -38,7 +38,7 @@ jobs:
       - name: build
         run: cargo build --workspace
 
-      # The 199 dashboard E2E tests are #[ignore]d: they drive a real browser
+      # The dashboard E2E tests are #[ignore]d: they drive a real browser
       # against a running gateway, so they are not part of the default run.
       - name: test
         run: cargo test --workspace

@@ -170,7 +170,7 @@ Test count: 3134 passing across the 16-crate workspace (+44 over the 3090 baseli
 - `Tool::execute` now takes `cancel: tokio_util::sync::CancellationToken`; the loop in `agentic.rs::execute_tool_batch` threads `ConnectionContext.abort_token` through to each call so `chat.abort` actually kills running tools (not just the LLM stream).
 - New `ToolResult::Cancelled` variant — distinct from generic errors so callers (and eventually the drclaw `ToolResultCard`) can render aborted tools differently. Pure-compute tools take the parameter and ignore it; long-running tools (shell streaming, HTTP, watchers) wrap their `await` points in `tokio::select! { _ = cancel.cancelled() => Cancelled, result = work => result }`.
 - WASM plugin tools deliberately do not honor cancellation — they're sandboxed under the WASM runtime which already enforces fuel/memory caps; threading a separate token into the WASM context is out of scope.
-- 3 integration smokes (`tests/cancellation_smokes.rs`): pure-compute completion, pre-cancelled token, mid-execution cancel firing 50ms into a 10s sleep. Workspace at 3140 tests, 0 failed.
+- 3 integration smokes (`tests/cancellation_smokes.rs`): pure-compute completion, pre-cancelled token, mid-execution cancel firing 50ms into a 10s sleep. Workspace suite green.
 - Commits: `7bee55f` (cascade across 47 files), `4caa5cd` (tests), `ff2a991` (rustfmt sweep on the cascade).
 
 **Wave B2 -- Hook Framework Expansion (CP1-CP6, 2026-05-03)**

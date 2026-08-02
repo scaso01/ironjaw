@@ -204,7 +204,7 @@ features work against Ironjaw. Legacy services can be stopped without user-visib
 
 ## Acceptance Criteria (Overall)
 
-- 346 tests passing across all 12 crates (`cargo test --workspace`)
+- The suite passes across every crate (`cargo test --workspace`)
 - All 13 phases implemented and tested
 - Coexists with existing services on port 18794
 - `/health` endpoint returns valid JSON with all subsystem statuses

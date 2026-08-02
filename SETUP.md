@@ -94,7 +94,7 @@ websocat ws://127.0.0.1:18794/ws
 ## Testing
 
 ```bash
-cargo test                          # all 346 tests
+cargo test                          # the whole suite
 cargo test -p ironjaw-core          # single crate
 cargo test -p ironjaw-ws            # websocket + integration tests
 cargo test -p ironjaw-security      # security tests
@@ -132,7 +132,8 @@ schtasks /Create /TN "Ironjaw" /SC ONLOGON /TR "wscript.exe scripts\ironjaw-wrap
 
 ### Caddy reverse proxy
 
-After cutover from OpenClaw, update Caddyfile upstream from :18789 to :18794.
+Point the upstream at `:18794`, or whatever `[server] port` is set to. The gateway
+speaks plain HTTP and WebSocket, so the proxy handles TLS and nothing else changes.
 
 ## Troubleshooting
 

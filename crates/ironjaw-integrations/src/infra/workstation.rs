@@ -25,7 +25,7 @@ impl Tool for HostStatusTool {
     }
 
     fn description(&self) -> &str {
-        "Get THIS machine's status (workstation: Ryzen AI 9 HX 370, 64GB RAM, Windows 11): CPU, memory, disk, services, uptime. Use for 'is X running', 'how much RAM is free', 'what's eating CPU' questions about the local machine."
+        "Get the status of the machine this gateway runs on: CPU, memory, disk, services, uptime. Use for 'is X running', 'how much RAM is free', 'what's eating CPU' questions about the local machine."
     }
 
     fn schema(&self) -> serde_json::Value {
