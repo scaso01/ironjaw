@@ -9,8 +9,8 @@
 
 ## Vision
 
-Single Rust binary replacing 7+ Node.js services (OpenClaw Gateway, CC Bridge, CC Chronicle, and
-future services) with better performance, reliability, and a unified codebase.
+A single Rust binary replacing a fleet of separate Node.js services with better performance,
+reliability, and a unified codebase.
 
 The goal is one process, one config file, one port — with no Node.js runtime dependency, no
 inter-process latency, and a clean architecture that can be extended without touching existing
@@ -155,15 +155,15 @@ log lines in production paths.
 
 ---
 
-### BR-013 — Cutover (Replace Existing Services, Coexist on Port 18794)
+### BR-013 — Incremental Cutover From Existing Services
 
-Ironjaw must run on port 18794 and coexist with existing services (OpenClaw on 18789, CC Bridge
-on 18790, CC Chronicle on 18793) during the transition period. After validation, Caddy, Task
-Scheduler, and the Dr. CLAW Android app must be updated to point to 18794, and legacy services
-decommissioned.
+Ironjaw must be adoptable without a flag day. It listens on its own configurable port, so it can
+run alongside whatever services it is replacing while each capability is migrated and verified.
+Clients move over by changing a URL, and the services it supersedes can then be retired.
 
-**Acceptance**: Ironjaw starts on 18794 without conflicting with existing services. All Dr. CLAW
-features work against Ironjaw. Legacy services can be stopped without user-visible regression.
+**Acceptance**: Ironjaw starts without conflicting with services already running on the host. A
+client pointed at it gets the same behaviour it had before. The superseded services can be stopped
+without user-visible regression.
 
 ---
 

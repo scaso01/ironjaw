@@ -11,7 +11,7 @@ curl http://127.0.0.1:18794/health
 
 ## Prerequisites
 
-- Rust 1.70+ (install via rustup)
+- Rust 1.93+ (install via rustup)
 - llama-server (optional, for LLM/voice/brain features) — runs on port 8080
 - SQLite is bundled via sqlx (no external dependency)
 
@@ -60,7 +60,8 @@ When `[integrations] enabled = true`, configure:
 
 ```toml
 [llm]
-default_model = "qwen3-coder"
+# Must name a model your provider actually serves; see config/ironjaw.toml.example
+default_model = "REPLACE-WITH-YOUR-MODEL-ID"
 
 [[llm.providers]]
 name = "llama-server"
