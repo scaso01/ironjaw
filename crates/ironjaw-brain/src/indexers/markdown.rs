@@ -446,11 +446,7 @@ fn is_indexable_markdown(path: &Path) -> bool {
 
     // Skip daily/ directory
     let path_str = path.to_string_lossy();
-    if path_str.contains("/daily/") || path_str.contains("\\daily\\") {
-        return false;
-    }
-
-    true
+    !(path_str.contains("/daily/") || path_str.contains("\\daily\\"))
 }
 
 /// Recursively walk a directory and collect file paths.
