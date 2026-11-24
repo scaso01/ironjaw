@@ -4,14 +4,13 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    # Cargo.lock only, within the ranges Cargo.toml allows: the same updates the weekly
+    # cargo update run tests. A 0.x minor bump (sqlx 0.8 to 0.9) is breaking in Cargo's
+    # rules, so anything that needs Cargo.toml edited is upgraded by hand.
+    versioning-strategy: lockfile-only
     groups:
       all-crates:
         patterns: ["*"]
-    ignore:
-      # Installs use the lockfile, so a major release reaches nobody until it is adopted
-      # on purpose. Majors are upgraded by hand; this group carries minor and patch only.
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
   - package-ecosystem: rust-toolchain
     directory: /
     schedule:
