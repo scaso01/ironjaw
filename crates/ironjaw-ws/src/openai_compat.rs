@@ -4,6 +4,9 @@
 //! so that any OpenAI SDK client (Open WebUI, LiteLLM, etc.) can connect to
 //! Ironjaw as an LLM proxy.
 
+// Handlers return axum's Response as the error, which is axum's own pattern.
+#![allow(clippy::result_large_err)]
+
 use crate::auth::constant_time_eq;
 use crate::state::AppState;
 use axum::{

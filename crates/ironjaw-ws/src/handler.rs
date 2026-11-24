@@ -137,7 +137,7 @@ pub async fn handle_connection(mut socket: WebSocket, state: AppState) {
             // Saturating sub: `send_frame` (used for events) does not increment the counter,
             // so we must not allow the counter to wrap on underflow.
             writer_pending
-                .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |n| {
+                .try_update(Ordering::Relaxed, Ordering::Relaxed, |n| {
                     Some(n.saturating_sub(1))
                 })
                 .ok();
