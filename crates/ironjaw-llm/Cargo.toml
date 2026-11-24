@@ -19,7 +19,7 @@ futures-util.workspace = true
 ring.workspace = true
 sqlx.workspace = true
 anyhow.workspace = true
-blake2 = "0.10"
+blake2 = "0.11"
 hex = "0.4"
 tiktoken-rs.workspace = true
 

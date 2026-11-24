@@ -30,12 +30,12 @@ futures-util.workspace = true
 tokio-stream.workspace = true
 tokio-util = { workspace = true }
 reqwest.workspace = true
-base64 = "0.22"
+base64 = "0.23"
 sqlx.workspace = true
 rand.workspace = true
 dashmap.workspace = true
 regex.workspace = true
-sysinfo = "0.34"
+sysinfo = "0.40"
 async-trait.workspace = true
 wasmi = { version = "2.0.0-beta.2", default-features = true }
 tokio-tungstenite.workspace = true

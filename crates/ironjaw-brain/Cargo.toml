@@ -19,12 +19,12 @@ reqwest.workspace = true
 sha2.workspace = true
 regex.workspace = true
 ironjaw-llm = { path = "../ironjaw-llm" }
-fastembed = "5"
+fastembed = "7"
 sqlite-vec = "0.1"
-libsqlite3-sys = "0.30"
+libsqlite3-sys = "0.40"
 moka = { version = "0.12", features = ["future"] }
-notify = { version = "7", default-features = false, features = ["macos_kqueue"] }
-notify-debouncer-mini = "0.5"
+notify = { version = "8", default-features = false, features = ["macos_kqueue"] }
+notify-debouncer-mini = "0.7"
 tokio-util = { version = "0.7", features = ["rt"] }
 
 [dev-dependencies]
