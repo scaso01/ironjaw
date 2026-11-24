@@ -38,6 +38,14 @@ impl CipherVersion {
 /// The current cipher version used for all new encryptions.
 const CURRENT_CIPHER: CipherVersion = CipherVersion::V2;
 
+/// Open `data` (ciphertext plus AEAD tag) under `key`; None when authentication fails.
+fn open_with(key: &LessSafeKey, nonce: [u8; NONCE_LEN], data: &[u8]) -> Option<Vec<u8>> {
+    let mut buf = data.to_vec();
+    key.open_in_place(Nonce::assume_unique_for_key(nonce), Aad::empty(), &mut buf)
+        .ok()
+        .map(|plaintext| plaintext.to_vec())
+}
+
 /// Category for a stored secret, controlling visibility and access.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -220,43 +228,38 @@ impl SecretsVault {
     }
 
     /// Decrypt a blob that may be versioned (V1/V2 tag) or unversioned (legacy V1).
+    ///
+    /// Legacy blobs carry no tag, so their first byte is random and reads as a V1 or V2
+    /// tag about 2 times in 256. A tagged open that fails authentication therefore falls
+    /// back to the legacy reading; the AEAD tag rejects every wrong guess.
     fn decrypt_blob(&self, ciphertext: &[u8], nonce_vec: &[u8]) -> anyhow::Result<Vec<u8>> {
-        if nonce_vec.len() != NONCE_LEN {
-            return Err(anyhow::anyhow!("Invalid nonce length"));
-        }
-        let mut nonce_bytes = [0u8; NONCE_LEN];
-        nonce_bytes.copy_from_slice(nonce_vec);
-        let nonce = Nonce::assume_unique_for_key(nonce_bytes);
+        let nonce: [u8; NONCE_LEN] = nonce_vec
+            .try_into()
+            .map_err(|_| anyhow::anyhow!("Invalid nonce length"))?;
 
-        match CipherVersion::detect(ciphertext) {
-            Some(CipherVersion::V1) => {
-                // Strip version tag byte, decrypt with AES-256-GCM
-                let mut data = ciphertext[1..].to_vec();
-                let plaintext = self
-                    .key_v1
-                    .open_in_place(nonce, Aad::empty(), &mut data)
-                    .map_err(|_| anyhow::anyhow!("V1 decryption failed"))?;
-                Ok(plaintext.to_vec())
-            }
-            Some(CipherVersion::V2) => {
-                // Strip version tag byte, decrypt with ChaCha20-Poly1305
-                let mut data = ciphertext[1..].to_vec();
-                let plaintext = self
-                    .key_v2
-                    .open_in_place(nonce, Aad::empty(), &mut data)
-                    .map_err(|_| anyhow::anyhow!("V2 decryption failed"))?;
-                Ok(plaintext.to_vec())
-            }
-            None => {
-                // No version tag — legacy untagged V1 data (AES-256-GCM)
-                let mut data = ciphertext.to_vec();
-                let plaintext = self
-                    .key_v1
-                    .open_in_place(nonce, Aad::empty(), &mut data)
-                    .map_err(|_| anyhow::anyhow!("Legacy V1 decryption failed"))?;
-                Ok(plaintext.to_vec())
-            }
-        }
+        let (tagged, failure) = match CipherVersion::detect(ciphertext) {
+            Some(CipherVersion::V1) => (
+                open_with(&self.key_v1, nonce, &ciphertext[1..]),
+                "V1 decryption failed",
+            ),
+            Some(CipherVersion::V2) => (
+                open_with(&self.key_v2, nonce, &ciphertext[1..]),
+                "V2 decryption failed",
+            ),
+            None => (None, "Legacy V1 decryption failed"),
+        };
+        tagged
+            .or_else(|| open_with(&self.key_v1, nonce, ciphertext))
+            .ok_or_else(|| anyhow::anyhow!(failure))
+    }
+
+    /// True only for a blob that really is V2: tagged V2 and authenticates under the V2 key.
+    fn is_v2(&self, ciphertext: &[u8], nonce_vec: &[u8]) -> bool {
+        let Ok(nonce) = <[u8; NONCE_LEN]>::try_from(nonce_vec) else {
+            return false;
+        };
+        CipherVersion::detect(ciphertext) == Some(CipherVersion::V2)
+            && open_with(&self.key_v2, nonce, &ciphertext[1..]).is_some()
     }
 
     /// Store or update a secret with a category. Value is encrypted at rest using V2
@@ -331,8 +334,7 @@ impl SecretsVault {
             None => return Err(anyhow::anyhow!("Secret not found: {secret_key}")),
         };
 
-        // Check if already V2 — skip migration
-        if CipherVersion::detect(&ciphertext) == Some(CipherVersion::V2) {
+        if self.is_v2(&ciphertext, &nonce_vec) {
             return Ok(());
         }
 
@@ -357,15 +359,14 @@ impl SecretsVault {
 
     /// Migrate all entries to V2 cipher. Returns the number of entries migrated.
     pub async fn migrate_all(&self) -> anyhow::Result<usize> {
-        let rows: Vec<(String, Vec<u8>)> =
-            sqlx::query_as("SELECT key, value FROM secrets ORDER BY key")
+        let rows: Vec<(String, Vec<u8>, Vec<u8>)> =
+            sqlx::query_as("SELECT key, value, nonce FROM secrets ORDER BY key")
                 .fetch_all(&self.pool)
                 .await?;
 
         let mut count = 0;
-        for (key, ciphertext) in &rows {
-            // Skip entries already on V2
-            if CipherVersion::detect(ciphertext) == Some(CipherVersion::V2) {
+        for (key, ciphertext, nonce) in &rows {
+            if self.is_v2(ciphertext, nonce) {
                 continue;
             }
             self.migrate_entry(key).await?;
@@ -905,6 +906,58 @@ mod tests {
         let vault = SecretsVault::open(":memory:").await.unwrap();
         let count = vault.migrate_all().await.unwrap();
         assert_eq!(count, 0);
+    }
+
+    /// Store an untagged legacy V1 entry whose ciphertext starts with `first`.
+    async fn insert_legacy_starting_with(vault: &SecretsVault, name: &str, first: u8) {
+        loop {
+            let mut nonce_bytes = [0u8; NONCE_LEN];
+            vault.rng.fill(&mut nonce_bytes).unwrap();
+            let mut ct = name.as_bytes().to_vec();
+            vault
+                .key_v1
+                .seal_in_place_append_tag(
+                    Nonce::assume_unique_for_key(nonce_bytes),
+                    Aad::empty(),
+                    &mut ct,
+                )
+                .unwrap();
+            if ct[0] != first {
+                continue;
+            }
+            sqlx::query("INSERT INTO secrets (key, value, nonce, category) VALUES (?, ?, ?, ?)")
+                .bind(name)
+                .bind(&ct)
+                .bind(&nonce_bytes[..])
+                .bind("user")
+                .execute(&vault.pool)
+                .await
+                .unwrap();
+            return;
+        }
+    }
+
+    #[tokio::test]
+    async fn test_legacy_entries_that_look_tagged_still_read_and_migrate() {
+        let vault = SecretsVault::open(":memory:").await.unwrap();
+        insert_legacy_starting_with(&vault, "looks_v1", CipherVersion::V1.tag()).await;
+        insert_legacy_starting_with(&vault, "looks_v2", CipherVersion::V2.tag()).await;
+
+        for name in ["looks_v1", "looks_v2"] {
+            assert_eq!(
+                vault.get(name).await.unwrap(),
+                Some((name.to_string(), SecretCategory::User))
+            );
+        }
+
+        assert_eq!(vault.migrate_all().await.unwrap(), 2);
+        assert_eq!(vault.migrate_all().await.unwrap(), 0);
+        for name in ["looks_v1", "looks_v2"] {
+            assert_eq!(
+                vault.get(name).await.unwrap(),
+                Some((name.to_string(), SecretCategory::User))
+            );
+        }
     }
 
     #[tokio::test]
