@@ -1,0 +1,5 @@
+# CI and local builds use this exact toolchain. Dependabot proposes new releases monthly;
+# they merge themselves once CI passes.
+[toolchain]
+channel = "1.100.0"
+components = ["rustfmt", "clippy"]

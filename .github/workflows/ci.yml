@@ -18,9 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
+      # Installs the toolchain rust-toolchain.toml pins, with its components.
+      - name: install toolchain
+        run: rustup toolchain install
 
       - uses: Swatinem/rust-cache@v2
 
@@ -42,3 +42,11 @@ jobs:
       # against a running gateway, so they are not part of the default run.
       - name: test
         run: cargo test --workspace
+
+  # The one check branch protection requires, so job changes never strand a merge.
+  ci-ok:
+    if: always()
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - run: test "${{ needs.test.result }}" = success
