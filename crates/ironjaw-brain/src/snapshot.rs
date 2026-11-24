@@ -219,7 +219,7 @@ impl SnapshotStore {
             r#"SELECT id, label, memory_count, identity_count, context_var_count, created_at
                FROM brain_snapshots
                WHERE deleted = 0
-               ORDER BY created_at DESC"#,
+               ORDER BY created_at DESC, id DESC"#,
         )
         .fetch_all(&self.pool)
         .await
